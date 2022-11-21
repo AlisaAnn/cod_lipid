@@ -1,0 +1,179 @@
+# This is the plotting & analysis script for LENGTH and CPUE
+
+# Libraries
+library(patchwork)
+
+# Load the previous script
+source("code/1_data_import.R")
+
+
+#### PLOTTING ####
+head(codlen)
+##if need to rename columns, you would type 
+codlen <- rename(codlen,"TL" = "Length (mm)") 
+head(codlen)
+
+##LF for all 3 years, all months in Cook Bay
+ggplot(codlen, aes(TL, fill=Month)) +
+  theme_bw() +
+  geom_density(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(0,250)+
+  facet_wrap(~year)
+
+##now that I have the 4 age-0 lengths in 2019, the density plot is wild.
+##instead plot geom_histogram
+
+ggplot(codlen, aes(TL, fill=Month)) +
+    geom_histogram(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(0,250)+
+  scale_fill_manual(values = c("red", "orange", "yellow", "green", "cyan",
+    "purple","grey", "black"))+
+  theme_bw() +
+  facet_wrap(~year)
+
+##LF for all 3 years, months May - Aug in Cook Bay and max TL 200
+codlen1 <- filter(codlen, month != "Dec", month != "Nov", month != "Oct", month != "Sept")
+
+ggplot(codlen1,aes(TL, fill=Month)) +
+  theme_bw() +
+  geom_density(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(0,250)+
+  facet_wrap(~year)
+
+distinct (codlen, month)
+
+ggplot(codlen1, aes(TL, fill=Month)) +
+  geom_histogram(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(0,210)+
+  scale_fill_manual(values = c("red", "orange", "yellow", "green", "cyan",
+                               "purple","grey", "black"))+
+  theme_bw() +
+  facet_wrap(~year)
+
+##LF for all 3 years, months Sept - Dec in Cook Bay and max TL 250
+codlen2 <- filter(codlen, month == "Dec"| month == "Nov"| 
+                  month == "Oct"| month == "Sept")
+distinct(codlen2, month)
+
+ggplot(codlen2,aes(TL, fill=Month)) +
+  theme_bw() +
+  geom_density(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(50,200)
+
+ggplot(codlen2, aes(TL, fill=Month)) +
+  geom_histogram(alpha=0.5) +
+  xlab("Total Length (mm)")+
+  xlim(50,200)+
+  scale_fill_manual(values = c("cyan",
+                               "purple","grey", "black"))+
+  theme_bw() +
+  facet_wrap(~year)
+
+
+###############PLOTS of CPUE##
+
+# Load the previous script
+source("code/1_data_import.R")
+
+##all years, age-0 only
+head(codcpue)
+codcpue <- rename(codcpue,"Cod" = "Cod_CPUE") 
+head(codcpue)
+ggplot(data = codcpue,
+       aes(x = Month,
+           y = Cod, color = Month)) +
+  geom_boxplot(width = 0.3)+
+  geom_jitter(alpha = 0.5)+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")
+
+
+ggplot(data = codcpue,
+       aes(x = Month,
+           y = Cod, color = Month)) +
+  geom_boxplot(width = 0.3)+
+  geom_jitter(alpha = 0.5)+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")+
+  facet_wrap(~year)
+
+##scale very different 2018 and 2020, so plot separately
+codcpue18 <- filter(codcpue, year == 2018)
+ggplot(data = codcpue18,
+       aes(x = Month,
+           y = Cod, color = Month)) +
+  geom_boxplot(width = 0.3)+
+  geom_jitter(alpha = 0.5)+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")+
+  xlab("Month (2018 only)")
+
+codcpue19 <- filter(codcpue, year == 2019)
+ggplot(data = codcpue19,
+       aes(x = Month,
+           y = Cod, color = Month)) +
+  geom_boxplot(width = 0.3)+
+  geom_jitter(alpha = 0.5)+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")+
+  xlab("Month (2019 only)")
+
+
+codcpue20 <- filter(codcpue, year == 2020)
+ggplot(data = codcpue20,
+       aes(x = Month,
+           y = Cod, color = Month)) +
+  geom_boxplot(width = 0.3)+
+  geom_jitter(alpha = 0.5)+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")+
+  xlab("Month (2020 only)")
+
+codcpue %>%
+  ggplot(aes(x = Month, y = Cod, color = as.factor(year))) +
+  geom_line()+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")
+
+codcpue %>%
+  ggplot(aes(x = Month, y = Cod, fill = as.factor(year))) +
+  geom_col()+
+  scale_fill_manual(values = c("darkorange","purple", "blue"))+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")
+
+
+codcpue %>%
+  ggplot(aes(x = Month, y = Cod, color = as.factor(year))) +
+  geom_point()+
+  scale_fill_manual(values = c("darkorange","purple", "blue"))+
+  theme_minimal()+
+  ylab("Age-0 Pacific cod")
+
+
+##try to plot to show males last to be in nursery area
+head(codcond)
+distinct(codcond, age) #age-0 and age-1
+distinct(codcond1,age) #only age-0
+
+codcond1 %>%
+  ggplot(aes(x = Month, y = sex, fill = as.factor(sex))) +
+  geom_count()+
+  theme_minimal()+
+  ylab("Count of age-0 Pacific cod sex")
+ 
+codcond1%>%
+  ggplot(aes(x = Month, fill = as.factor(sex))) +
+  geom_bar()+
+  theme_minimal()+
+  ylab("Count of age-0 Pacific cod sex")+
+  xlab("Month")
+
+
+
+
