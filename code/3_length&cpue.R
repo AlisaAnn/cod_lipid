@@ -116,7 +116,7 @@ summary(mod1)
 
 plot(mod1, se = F, resid = T, pch = 19)
 
-predict(mod1, newdata = codcpue)
+## ---------------------------------------
 
 ggplot(data = codcpue,
        aes(x = Month,
