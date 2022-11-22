@@ -90,6 +90,9 @@ ggplot(data = codcpue,
   geom_boxplot(width = 0.3)+
   geom_jitter(alpha = 0.5)+
   theme_minimal()+
+  coord_trans(y = "pseudo_log") +
+  scale_y_continuous(breaks=c(0, 1,10,20,50, 100,200, 500, 1000, 1500),
+                     minor_breaks = NULL) +
   ylab("Age-0 Pacific cod")
 
 
