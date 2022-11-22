@@ -52,7 +52,7 @@ head(codcond1)
 tail(codcond1)
 
 ## ## now add LENGTH data ####
-codlen <- read_csv("C:/Users/alask/Documents/EFH_cook_season_diet_lipid/Rstudio_codseason/data/cook_codlen1820.csv")
+codlen <- read_csv("data/cook_codlen1820.csv")
 
 head(codlen)
 distinct(codlen, bay)
@@ -71,7 +71,7 @@ codlen <- mutate(codlen, Month = fct_relevel(month, c("May", "June", "July", "Au
 
 ## ## now add CATCH data ####
 
-codcpue <- read_csv("C:/Users/alask/Documents/EFH_cook_season_diet_lipid/Rstudio_codseason/data/cook_codcpue1820.csv")
+codcpue <- read_csv("data/cook_codcpue1820.csv")
 #  rename("Cod" = "Pacific cod") 
 head(codcpue)
 distinct(codcpue, Bay) #should show only Cook Bay
