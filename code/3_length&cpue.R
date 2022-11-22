@@ -95,6 +95,28 @@ ggplot(data = codcpue,
                      minor_breaks = NULL) +
   ylab("Age-0 Pacific cod")
 
+## explore abundance by day by year -----------------------------
+
+library(mgcv)
+
+# log-transform cpue
+codcpue <- codcpue %>%
+  mutate(log_cpue = log(Cod+1),
+         year_fac = as.factor(year))
+
+# plot cpue by year and Julian day
+ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
+  geom_point() +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(log_cpue ~ s(Julian_date, k = 4) + year_fac, data = codcpue)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+predict(mod1, newdata = codcpue)
 
 ggplot(data = codcpue,
        aes(x = Month,
