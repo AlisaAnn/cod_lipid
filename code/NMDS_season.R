@@ -49,8 +49,9 @@ NMDS3 <- prey_wgtMDS$points[,3]
 #Add them to the ordination data plot
 codprey.plot<-cbind(prey_wgt, NMDS1, NMDS2, NMDS3)
 head(codprey.plot)
+
 ##AA tries to save file w NMDS 3 dimensions. no success
-##saveRDS(Wgt_prey,file ="output/nmds_wgt_results.csv")
+write.csv(codprey.plot, file ="output/nmds_wgt_results.csv")
 
 #### Plot the NMS in Base R ###
 
