@@ -379,8 +379,6 @@ ggplot(linear_mod, aes(HSIdry, HSI_wet)) +
   geom_point() +
   theme_minimal()
 
-
-
 # plot Fultondry by year and Julian day
 ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
   geom_point() +
