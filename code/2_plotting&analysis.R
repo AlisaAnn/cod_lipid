@@ -375,12 +375,18 @@ plot(mod1, se = F, resid = T, pch = 19)
 ##seems that results same for HSI wet and HSI dry. Try linear model
 linear_mod <- lm (formula = HSI_wet~ HSIdry, data = codcond1)
 summary(linear_mod)
+ggplot(linear_mod, aes(HSIdry, HSI_wet)) +
+  geom_point() +
+  theme_minimal()
+
+
 
 # plot Fultondry by year and Julian day
 ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
   geom_point() +
   theme_minimal()+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
 
 
 mod1 <- gam(Kdry ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
@@ -424,3 +430,4 @@ lm_model1820gut <- lm(stom_percent_wgt ~ Month, data = codcond1)
 lm_model1820gut
 
 summary(lm_model1820gut)
+
