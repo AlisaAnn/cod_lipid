@@ -26,7 +26,11 @@ plot1 <- codcond1 %>%
   geom_point()+
 theme_minimal()
 plot1
-#probably not using Kdry anymore. Nov 2022 notes
+#probably not using Kdry anymore. Nov 2022 notes. test to see if relationship
+
+a <- lm(formula = HSIdry~Kdry, data = codcond1)
+summary (a)
+
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = K_wet, y = HSI_wet, color = Month)) +
@@ -34,6 +38,11 @@ plot1 <- codcond1 %>%
   theme_minimal()
 plot1
 # 2 datapoints in Nov are outliers. check on these. OK. checked and they are valid
+#test to see if relationship
+
+a <- lm(formula = HSI_wet~K_wet, data = codcond1)
+summary (a)
+
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = TL, y = HSIdry, color = Month)) +
@@ -75,6 +84,7 @@ ggsave(plot1, filename = "output/LW_scatter.png", width = 6.5, height = 6, units
 plot1
 
 ##### ANALYSIS #####
+##ask Mike how to get LW equation to put into results##
 lm_model <- lm(wgt_total ~ TL, data = codcond1)
 lm_model
 
@@ -132,7 +142,7 @@ ggplot(plot.month, aes(month, Estimate)) +
 
 str(plot.month)
 
-##try something with cod condition data: HSI and Kdry
+##Alisa try something with cod condition data: HSI and Kdry
 ggplot(data = codcond1,
        aes(x = TL,
            y = wgt_total,
@@ -326,7 +336,78 @@ temp <- codcond1 %>%
 
 temp
 
-###new plots w STOMACH WEIGHT
+
+## explore condition by day by year -------ALISA-NEW---------------------
+
+library(mgcv)
+
+
+codcond1 <- codcond1 %>%
+  mutate(year_fac = as.factor(year))
+
+# plot HSIwet by year and Julian day
+ggplot(codcond1, aes(Julian_date, HSI_wet, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(HSI_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+
+# plot HSIdry by year and Julian day
+ggplot(codcond1, aes(Julian_date, HSIdry, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(HSIdry ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+##seems that results same for HSI wet and HSI dry. Try linear model
+linear_mod <- lm (formula = HSI_wet~ HSIdry, data = codcond1)
+summary(linear_mod)
+
+# plot Fultondry by year and Julian day
+ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(Kdry ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+# plot Fultonwet by year and Julian day
+ggplot(codcond1, aes(Julian_date, K_wet, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(K_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+##seems that results same for Fulton wet and Fulton dry. Try linear model
+linear_mod <- lm (formula = K_wet~ Kdry, data = codcond1)
+summary(linear_mod)
+## ---------------------------------------
+
+###new plots w STOMACH WEIGHT 
 head(codcond1)
 
 ggplot(data = codcond1,
