@@ -107,6 +107,7 @@ codcpue <- codcpue %>%
 # plot cpue by year and Julian day
 ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
+  theme_minimal()+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 
@@ -126,6 +127,7 @@ ggplot(data = codcpue,
   theme_minimal()+
   ylab("Age-0 Pacific cod")+
   facet_wrap(~year)
+
 
 ##scale very different 2018 and 2020, so plot separately
 codcpue18 <- filter(codcpue, year == 2018)
@@ -198,6 +200,27 @@ codcond1%>%
   theme_minimal()+
   ylab("Count of age-0 Pacific cod sex")+
   xlab("Month")
+
+codcond1%>%
+  ggplot(aes(x = Month, fill = as.factor(sex))) +
+  geom_bar(width = 0.5)+
+  theme_bw()+
+  ylab("Number of age-0 Pacific cod")+
+  scale_y_continuous(breaks = seq(from = 0, to = 100, by= 20), limits = c(0,100))+
+  xlab("Month Captured")+
+  labs(fill = "Sex")+
+  theme(legend.position = c(0.9,0.7))
+
+##AA stopped here to try to get grey/black
+codcond1%>%
+  ggplot(aes(x = Month, fill = as.factor(sex))) +
+  geom_bar(width = 0.5, scale_fill_manual(values = c("black", "grey", "white")))+
+  theme_bw()+
+  ylab("Number of age-0 Pacific cod", limits = c(0,100))+
+  scale_y_continuous(breaks = seq(from = 0, to = 100, by= 20))+
+  xlab("Month Captured")+
+  labs(fill = "Sex")+
+  theme(legend.position = c(0.9,0.7))
 
 
 
