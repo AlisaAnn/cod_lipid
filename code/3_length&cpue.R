@@ -109,13 +109,16 @@ ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
   theme_minimal()+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
-
+## NB: change to colorblind palette, clean up
 
 mod1 <- gam(log_cpue ~ s(Julian_date, k = 4) + year_fac, data = codcpue)
 
 summary(mod1)
 
 plot(mod1, se = F, resid = T, pch = 19)
+## NB: this model does not include autocorrelated residuals
+## add these with GAMM, etc.
+
 
 ## ---------------------------------------
 
