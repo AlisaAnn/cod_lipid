@@ -90,3 +90,7 @@ codcpue <- mutate(codcpue, Month = fct_relevel(month, c("Feb", "March", "April",
 # We use fct_relevel to explicitly define the factor order for column "Month" 
 distinct (codcpue, Month)
 
+# Read in the lipid and condition data 
+codlipid <- read_csv("data/together.csv")
+head(codlipid)
+
