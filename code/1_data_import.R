@@ -93,4 +93,8 @@ distinct (codcpue, Month)
 # Read in the lipid and condition data 
 codlipid <- read_csv("data/together.csv")
 head(codlipid)
+#this file doens' have fulton's K so need another file
 
+# Read in the lipid and gross condition data 
+codgrosslipid <- read_csv("data/gross_lipid_cond.csv")
+head(codgrosslipid)
