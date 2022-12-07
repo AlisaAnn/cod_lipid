@@ -81,9 +81,23 @@ codlen <- codlen %>%
 
 ggplot(codlen, aes(J_date, TL, color = year_fac)) +
   geom_point() +
-  theme_minimal()+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+  theme_bw()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F)
 
+ggsave("./figs/length_by_date.png", width = 6, height = 4, units = 'in')
+
+# plot 2019-2020 only
+ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, TL, color = year_fac)) +
+  geom_point() +
+  theme_bw()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 6), se = F)
+
+ggsave("./figs/length_by_date_2018_2020.png", width = 6, height = 4, units = 'in')
+
+mod1 <- mgcv::gam(TL ~ s(J_date, k = 6, by = year_fac), data = codlen)
+mod2 <- mgcv::gam(TL ~ s(J_date, k = 6), data = codlen)
+
+MuMIn::AICc(mod1, mod2) # different curves for different years = better model
 
 
 ###############PLOTS of CPUE##
