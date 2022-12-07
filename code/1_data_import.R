@@ -98,3 +98,4 @@ head(codlipid)
 # Read in the lipid and gross condition data 
 codgrosslipid <- read_csv("data/gross_lipid_cond.csv")
 head(codgrosslipid)
+
