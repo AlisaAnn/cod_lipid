@@ -1,5 +1,6 @@
 # This is the plotting & analysis script for CONDITION dataframe = codcond1
 #this has only age-0, years 2018-2020, seine gear, cook bay
+##any plots or linear models with Kdry or HSIdry are in this script.
 
 # Libraries
 library(patchwork)
@@ -18,7 +19,8 @@ distinct(codcond1, year) #only age-1 fish in 2019, so 2019 doesn't appear
 plot1 <- codcond1 %>%
   ggplot(aes(x = TL, y = wgt_total, color = Month)) +
   geom_point()+
-  xlab("age-0, Cook Bay 2018 and 2020")
+  xlab("age-0, Cook Bay 2018 and 2020")+
+  theme_minimal()
 plot1
 
 plot1 <- codcond1 %>%
@@ -28,7 +30,21 @@ theme_minimal()
 plot1
 #probably not using Kdry anymore. Nov 2022 notes. test to see if relationship
 
+##these scatter plots and results with Kdry and HSIdry
 a <- lm(formula = HSIdry~Kdry, data = codcond1)
+summary (a)
+
+a <- lm(formula = Kdry~K_wet, data = codcond1)
+summary (a)
+
+plot1 <- codcond1 %>%
+  ggplot(aes(x = K_wet, y = Kdry, color = Month)) +
+  geom_point()+
+  theme_minimal()
+plot1
+
+
+a <- lm(formula = HSI_wet~HSIdry, data = codcond1)
 summary (a)
 
 
@@ -337,7 +353,7 @@ temp <- codcond1 %>%
 temp
 
 
-## explore condition by day by year -------ALISA-NEW---------------------
+## explore condition by day (rather than month) by year -------ALISA-NEW--------
 
 library(mgcv)
 
@@ -357,6 +373,23 @@ mod1 <- gam(HSI_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
 summary(mod1)
 
 plot(mod1, se = F, resid = T, pch = 19)
+
+##12/2/22 Mike wanted me to also plot condition by TL and then compare the
+# two models with MuLin to see if condition determined by size or season.
+# plot HSIwet by year and Totoal length
+
+ggplot(codcond1, aes(TL, HSI_wet, color = year_fac))+
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(HSI_wet ~ s(TL, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
 
 
 # plot HSIdry by year and Julian day
@@ -401,6 +434,33 @@ ggplot(codcond1, aes(Julian_date, K_wet, color = year_fac)) +
 
 
 mod1 <- gam(K_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+##as per Mike's 12/2 suggestion, going to plot Kwet by TL
+# plot Fultonwet by size
+ggplot(codcond1, aes(TL, K_wet, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(K_wet ~ s(TL, k = 4) + year_fac, data = codcond1)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+# plot Fulton Kdry by size
+ggplot(codcond1, aes(TL, Kdry, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod1 <- gam(Kdry ~ s(TL, k = 4) + year_fac, data = codcond1)
 
 summary(mod1)
 
