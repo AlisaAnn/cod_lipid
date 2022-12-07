@@ -384,13 +384,44 @@ ggplot(codcond1, aes(TL, HSI_wet, color = year_fac))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 
-mod1 <- gam(HSI_wet ~ s(TL, k = 4) + year_fac, data = codcond1)
+mod2 <- gam(HSI_wet ~ s(TL, k = 4) + year_fac, data = codcond1)
 
-summary(mod1)
+summary(mod2)
 
-plot(mod1, se = F, resid = T, pch = 19)
+plot(mod2, se = F, resid = T, pch = 19)
+
+MuMIn::AICc(mod1, mod2)
+
+# different curve for Julian date in each year
+mod3 <- gam(HSI_wet ~ s(Julian_date, k = 4, by = year_fac), data = codcond1)
+summary(mod3)
+
+mod4 <- gam(HSI_wet ~ s(TL, k = 4, by = year_fac), data = codcond1)
+summary(mod4)
+
+MuMIn::AICc(mod1, mod2, mod3, mod4) # model 3 is the best (separate Julian day curves by year)
+summary(mod3)
+plot(mod3, resid = T, pch = 19)
+
+# separate curves for each effect in each year
+mod5 <- gam(HSI_wet ~ s(Julian_date, k = 4, by = year_fac) +
+              s(TL, k = 4, by = year_fac), data = codcond1)
+summary(mod5)
 
 
+MuMIn::AICc(mod3, mod5)
+summary(mod5)
+plot(mod5, resid = T)
+
+mod6 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codcond1)
+
+MuMIn::AICc(mod5, mod6)
+
+mod7 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
+              s(TL, k = 4), data = codcond1)
+
+MuMIn::AICc(mod5, mod6, mod7)
 
 # plot HSIdry by year and Julian day
 ggplot(codcond1, aes(Julian_date, HSIdry, color = year_fac)) +
