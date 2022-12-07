@@ -75,6 +75,17 @@ ggplot(codlen2, aes(TL, fill=Month)) +
   facet_wrap(~year)
 
 
+##plot length by julian date instead of histograms, as per Mike's idea 12/2/22
+codlen <- codlen %>%
+  mutate(year_fac = as.factor(year))
+
+ggplot(codlen, aes(J_date, TL, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+
 ###############PLOTS of CPUE##
 
 # Load the previous script
