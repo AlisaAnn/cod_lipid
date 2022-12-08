@@ -4,6 +4,11 @@
 
 # Libraries
 library(patchwork)
+library(tidyverse)
+
+theme_set(theme_bw())
+cb <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
 
 # Load the previous script
 source("code/1_data_import.R")
@@ -356,10 +361,16 @@ temp
 ## explore condition by day (rather than month) by year -------ALISA-NEW--------
 
 library(mgcv)
-
+library(gamm4)
 
 codcond1 <- codcond1 %>%
-  mutate(year_fac = as.factor(year))
+  mutate(year_fac = as.factor(year),
+         site_fac = as.factor(site),
+         day_fac = as.factor(Julian_date))
+
+# set up factors for stite and date
+codcond1 %>% codcond1 %>%
+  mutate()
 
 # plot HSIwet by year and Julian day
 ggplot(codcond1, aes(Julian_date, HSI_wet, color = year_fac)) +
@@ -423,7 +434,53 @@ mod7 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
 
 MuMIn::AICc(mod5, mod6, mod7)
 
-# plot HSIdry by year and Julian day
+# model 5 remains the best model
+# refit with gamm4 to account for non-independence within nested site/set
+# and plot
+mod5a <- gamm4(HSI_wet ~ s(Julian_date, k = 4, by = year_fac) +
+              s(TL, k = 4, by = year_fac),
+              random=~(1|site_fac/day_fac),
+              data = codcond1)
+summary(mod5a$gam)
+
+# get the data to plot
+plot_dat <- plot(mod5a$gam)
+
+# restructure into a data frame to plot in ggplot
+plot_this <- data.frame(year = as.factor(rep(c(2018, 2020, 2018, 2020), each = 100)),
+                        facet = rep(c("Day of year", "Total length (mm)"), each = 200), 
+                        HSI_wet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
+                        se = c(plot_dat[[1]]$se, plot_dat[[2]]$se, plot_dat[[3]]$se, plot_dat[[4]]$se),
+                        x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x, plot_dat[[3]]$x, plot_dat[[4]]$x))
+  
+my.col = cb[c(2,6)]
+
+ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = HSI_wet - 1.96*se,
+                    ymax = HSI_wet + 1.96*se), 
+                alpha = 0.2,
+              lty = 0) +
+  facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.6, 0.8),
+        legend.title = element_blank()) +
+  ylab("HSI wet") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)
+
+ggsave("./Figs/HSIwet_vs_day_length.png", width = 6, height = 3, units = 'in')
+
+# to plot each curve for each year, we need to predict for a data frame 
+# holding each covariate at its mean value\
+
+new.dat1 <- data.frame()
+
+
+
+
+
+## plot HSIdry by year and Julian day -----------------
 ggplot(codcond1, aes(Julian_date, HSIdry, color = year_fac)) +
   geom_point() +
   theme_minimal()+
