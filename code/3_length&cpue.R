@@ -2,6 +2,9 @@
 
 # Libraries
 library(patchwork)
+## mike I need help here:
+#library(Cran)
+#library (MuMIn)
 
 # Load the previous script
 source("code/1_data_import.R")
@@ -86,7 +89,7 @@ ggplot(codlen, aes(J_date, TL, color = year_fac)) +
 
 ggsave("./figs/length_by_date.png", width = 6, height = 4, units = 'in')
 
-# plot 2019-2020 only
+# plot 2018-2020 only
 ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, TL, color = year_fac)) +
   geom_point() +
   theme_bw()+
@@ -134,11 +137,14 @@ ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
   theme_minimal()+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
+
 ## NB: change to colorblind palette, clean up
 
 mod1 <- gam(log_cpue ~ s(Julian_date, k = 4) + year_fac, data = codcpue)
 
 summary(mod1)
+
 
 plot(mod1, se = F, resid = T, pch = 19)
 ## NB: this model does not include autocorrelated residuals
