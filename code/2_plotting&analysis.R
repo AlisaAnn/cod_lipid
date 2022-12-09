@@ -47,7 +47,7 @@ plot1 <- codcond1 %>%
   geom_point()+
   theme_minimal()
 plot1
-
+ggsave("./figs/Kwet_Kdry.png", width = 6, height = 4, units = 'in')
 
 a <- lm(formula = HSI_wet~HSIdry, data = codcond1)
 summary (a)
@@ -454,7 +454,7 @@ plot(mod5, resid = T)
 
 mod6 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
               s(TL, k = 4) + year_fac, data = codcond1,
-            family = "quasibinomial") # us this family for proportion data!
+            family = "quasibinomial") # use this family for proportion data!
 
 MuMIn::AICc(mod5, mod6)
 
