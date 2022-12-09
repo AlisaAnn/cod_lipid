@@ -33,6 +33,7 @@ ggplot(data = codFA,
            color = Month)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() 
+ggsave("./figs/HSIwet_totalFA.png", width = 6, height = 4, units = 'in')
 
 #now scatterplot of Kwet_evic and whole body fatty acid
 ggplot(data = codFA,
@@ -63,3 +64,19 @@ ggplot(data = codFA,
 
 a <- lm(formula = Kwet_evic ~ muscleFA, data = codFA)
 summary (a)
+
+##___________looking at FA by J_date_____
+
+library(mgcv)
+codFA <- codFA %>%
+  mutate(year_fac = as.factor(year)
+
+mod1 <- gam(HSIwet ~ s(Julian_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codcond1,
+            family = gaussian)
+plot(mod1)
+
+
+mod1 <- gam(liverFA ~ s(Julian_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codcond1,
+            family = "quasibinomial")
