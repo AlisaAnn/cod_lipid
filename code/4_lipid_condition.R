@@ -21,27 +21,29 @@ head(codFA)
 ggplot(data = codFA,
        aes(x = HSIwet,
            y = Kwet_evic,
-           color = Month)) +
-geom_point(size = 3, alpha = 0.8) +
-theme_minimal() 
+           color = Month))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
 
+
+ggsave("./figs/HSIwet_Kwet.png", width = 6, height = 4, units = 'in')  
 
 #now scatterplot of HSIwet and whole body fatty acid
-ggplot(data = codFA,
-       aes(x = HSIwet,
-           y = wholeFA,
-           color = Month)) +
-  geom_point(size = 3, alpha = 0.8) +
-  theme_minimal() 
-ggsave("./figs/HSIwet_totalFA.png", width = 6, height = 4, units = 'in')
+#I think this doesn't make sense, so stop
+#ggplot(data = codFA,
+   #    aes(x = HSIwet,
+    #       y = wholeFA,
+     #      color = Month)) +
+  #geom_point(size = 3, alpha = 0.8) +
+  #theme_minimal() 
 
 #now scatterplot of Kwet_evic and whole body fatty acid
-ggplot(data = codFA,
-       aes(x = Kwet_evic,
-           y = wholeFA,
-           color = Month)) +
-  geom_point(size = 3, alpha = 0.8) +
-  theme_minimal() 
+#ggplot(data = codFA,
+   #    aes(x = Kwet_evic,
+    #       y = wholeFA,
+     #      color = Month)) +
+  #geom_point(size = 3, alpha = 0.8) +
+  #theme_minimal() 
 
 #can we compare liver FA with HSIwet
 ggplot(data = codFA,
@@ -65,18 +67,39 @@ ggplot(data = codFA,
 a <- lm(formula = Kwet_evic ~ muscleFA, data = codFA)
 summary (a)
 
-##___________looking at FA by J_date_____
+#can we compare liver FA with total length
+ggplot(data = codFA,
+       aes(x = TL,
+           y = liverFA,
+           color = Month)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
+
+a <- lm(formula = TL ~ liverFA, data = codFA)
+summary (a)
+
+##___________looking at HSI, liverFA, and muscle by J_date_____
 
 library(mgcv)
 codFA <- codFA %>%
-  mutate(year_fac = as.factor(year)
+  mutate(year_fac = as.factor(Year))
 
-mod1 <- gam(HSIwet ~ s(Julian_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codcond1,
+mod1 <- gam(HSIwet ~ s(J_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codFA,
             family = gaussian)
 plot(mod1)
 
+summary(mod1)
+##based on mumlin, can run above without TL?
 
-mod1 <- gam(liverFA ~ s(Julian_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codcond1,
-            family = "quasibinomial")
+mod2 <- gam(liver_bi ~ s(J_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codFA,
+            family = quasibinomial)
+plot(mod2)
+summary(mod2)
+
+mod3 <- gam(muscle_bi ~ s(J_date, k = 4) +
+              s(TL, k = 4) + year_fac, data = codFA,
+            family = quasibinomial)
+plot(mod3)
+summary(mod3)
