@@ -23,6 +23,7 @@ head(codcond1)
 tail(codcond1) #you can see it worked because now 561 obs instead of 564
 
 #need to remove years 2017 and 2021
+distinct(codcond1,year)
 codcond1<-filter(codcond,year=="2018"|year=="2019" | year == "2020")
 codcond1
 distinct(codcond1, year)
@@ -51,6 +52,7 @@ str(codcond1) # we can see now that the factors are ordered correctly
 head(codcond1)
 tail(codcond1)
 
+
 ## ## now add LENGTH data ####
 codlen <- read_csv("data/cook_codlen1820.csv")
 
@@ -60,7 +62,7 @@ distinct(codlen,year)
 tail(codlen)
  
 ##if need to rename columns, you would type 
-rename(codlen,"TL" = "Length (mm)") 
+codlen <- rename(codlen,"TL" = "Length (mm)") 
 head(codlen)
 
 # When we boxplot this, we notice that the factors in month are alphabetical. 
@@ -72,8 +74,9 @@ codlen <- mutate(codlen, Month = fct_relevel(month, c("May", "June", "July", "Au
 ## ## now add CATCH data ####
 
 codcpue <- read_csv("data/cook_codcpue1820.csv")
-#  rename("Cod" = "Pacific cod") 
 head(codcpue)
+#  rename("Cod" = "Pacific cod") 
+
 distinct(codcpue, Bay) #should show only Cook Bay
 distinct(codcpue,year) #should show 2018, 2019, 2020
 tail(codcpue) #to make sure no NA at rows at end
@@ -85,10 +88,13 @@ tail(codcpue) #to make sure no NA at rows at end
 distinct(codcpue, month)
 # When we boxplot this, we notice that the factors in month are alphabetical. 
 #we want them to be sequential, so need to create a new column "Month" w ordered factor
+
 codcpue <- mutate(codcpue, Month = fct_relevel(month, c("Feb", "March", "April", "May",
-"June", "July", "Aug","Sept", "Oct", "Nov", "Dec")))
+"June", "July", "Aug", "Sept", "Oct", "Nov", "Dec")))
+
 # We use fct_relevel to explicitly define the factor order for column "Month" 
 distinct (codcpue, Month)
+##not sure why console lists Oct, Dec, Nov -ask Mike
 
 # Read in the lipid and condition data 
 codlipid <- read_csv("data/together.csv")
@@ -98,4 +104,4 @@ head(codlipid)
 # Read in the lipid and gross condition data 
 codgrosslipid <- read_csv("data/gross_lipid_cond.csv")
 head(codgrosslipid)
-
+tail(codgrosslipid)
