@@ -398,7 +398,14 @@ summary(mod2)
 plot(mod2, se = F, resid = T, pch = 19)
 
 install.packages('evaluate')
-MuMIn::AICc(mod1, mod2)
+install.packages('hexbin')
+#MuMIn::AICc(mod1, mod2)
+#since I cannot get R to recognize package MuMIn, I will just use AIC 
+#AIC = Akaike's Information Criterion
+AIC(mod1,mod2)
+#and there is BIC which is Schwarz's Bayesian Criterion. 
+#in both AIC and BIC the smaller value is the better fit.
+BIC(mod1,mod2)
 
 # different curve for Julian date in each year
 mod3 <- gam(HSI_wet ~ s(Julian_date, k = 4, by = year_fac), data = codcond1)
