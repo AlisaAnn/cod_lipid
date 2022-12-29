@@ -75,8 +75,8 @@ ggplot(data = codFA,
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() 
 
-a <- lm(formula = TL ~ liverFA, data = codFA)
-summary (a)
+b <- lm(formula = TL ~ liverFA, data = codFA)
+summary (b)
 
 ##___________looking at HSI, liverFA, and muscle by J_date_____
 
