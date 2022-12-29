@@ -402,7 +402,8 @@ plot(mod2, se = F, resid = T, pch = 19)
 
 install.packages('evaluate')
 install.packages('hexbin')
-##MuMIn::AICc(mod1, mod2)
+
+MuMIn::AICc(mod1, mod2)
 #since I cannot get R to recognize package MuMIn, I will just use AIC 
 #AIC = Akaike's Information Criterion
 AIC(mod1,mod2)
