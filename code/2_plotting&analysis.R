@@ -369,10 +369,13 @@ codcond1 <- codcond1 %>%
          day_fac = as.factor(Julian_date))
 
 # plot HSIwet by year and Julian day
-ggplot(codcond1, aes(Julian_date, HSI_wet, color = year_fac)) +
+HSIplot <- ggplot(codcond1, aes(Julian_date, HSI_wet, color = year_fac)) +
   geom_point() +
   theme_minimal()+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+plot(HSIplot)
+ggsave(HSIplot, filename = "output/HSIwet_Jdate.png", width = 6.5, 
+       height = 6, units = "in")
 
 
 mod1 <- gam(HSI_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
@@ -406,6 +409,10 @@ AIC(mod1,mod2)
 #and there is BIC which is Schwarz's Bayesian Criterion. 
 #in both AIC and BIC the smaller value is the better fit.
 BIC(mod1,mod2)
+
+####ALISA STOP HERE BECAUSE NEED TO RUN W MUMIN ON MIKE"S MACHINE TO GET NEW PLOTS
+
+
 
 # different curve for Julian date in each year
 mod3 <- gam(HSI_wet ~ s(Julian_date, k = 4, by = year_fac), data = codcond1)
