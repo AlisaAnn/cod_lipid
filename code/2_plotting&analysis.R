@@ -397,6 +397,7 @@ summary(mod2)
 
 plot(mod2, se = F, resid = T, pch = 19)
 
+install.packages('evaluate')
 MuMIn::AICc(mod1, mod2)
 
 # different curve for Julian date in each year
