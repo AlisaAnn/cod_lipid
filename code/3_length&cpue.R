@@ -2,9 +2,14 @@
 
 # Libraries
 library(patchwork)
-## mike I need help here:
-#library(Cran)
-#library (MuMIn)
+## mike I need help here: is MuMIN package nested in another library?
+
+getOption("defaultPackages")
+install.packages("evaluate")
+install.packages("MuMIn")
+library (MuMIn) #this doesn't work
+
+
 
 # Load the previous script
 source("code/1_data_import.R")
