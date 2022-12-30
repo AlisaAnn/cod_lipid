@@ -26,11 +26,11 @@ cooktemp <- cooktemp %>%
   mutate(Avg_Temp_C = as.integer(Avg_Temp))
 str(cooktemp)
 ggplot(cooktemp, aes(J_date, Avg_Temp_C, color = year_fac)) +
-  geom_line() +
+  geom_point() +
   theme_bw() +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F)
 
-ggsave("./figs/Cook_Bay_Temp.png", width = 6, height = 4, units = 'in')
+ggsave("./figs/Cook_Bay_Temp1.png", width = 6, height = 4, units = 'in')
 
 ##Mike make plot better by only showing curve and not datapoints?
 ##Mike test if years different in cooktemp?
