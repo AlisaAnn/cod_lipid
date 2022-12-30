@@ -4,7 +4,7 @@ library(tidyverse)
 library(lubridate)
 
 # Read in the data and rename any columns that need renaming
-cooktemp <- read_csv("data/DailyTempAvg.csv")
+cooktemp <- read_csv("data/DailyTempAvg1.csv")
 head(cooktemp)
 cooktemp <- rename(cooktemp, "Avg_Temp" = "Avg Temp")
 head(cooktemp)
