@@ -78,6 +78,7 @@ ggplot(data = codFA,
 b <- lm(formula = TL ~ liverFA, data = codFA)
 summary (b)
 
+##begin MuMIn analysis to look at condition/lipid by Julian date
 ##___________looking at HSI, liverFA, and muscle by J_date_____
 
 library(mgcv)
