@@ -358,7 +358,7 @@ temp <- codcond1 %>%
 temp
 
 
-## explore condition by day (rather than month) by year -------ALISA-NEW--------
+## explore HSI by day (rather than month) by year -------ALISA-NEW--------
 
 library(mgcv)
 library(gamm4)
@@ -468,16 +468,22 @@ MuMIn::AICc(mod3, mod5)
 summary(mod5)
 plot(mod5, resid = T)
 
-mod6 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codcond1,
-            family = "quasibinomial") # use this family for proportion data!
+# mod6 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
+#               s(TL, k = 4) + year_fac, data = codcond1,
+#             family = "quasibinomial") # use this family for proportion data!
 
-MuMIn::AICc(mod5, mod6)
+# MuMIn::AICc(mod5, mod6)
 
 mod7 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
               s(TL, k = 4), data = codcond1)
 
-MuMIn::AICc(mod5, mod6, mod7)
+# MuMIn::AICc(mod5, mod6, mod7)
+MuMIn::AICc(mod5, mod7)
+
+# save AICc output
+out <- as.data.frame(MuMIn::AICc(mod1, mod2, mod3, mod4, mod5, mod7))
+
+write.csv(out, "./output/HSI_wet_AICc.csv", row.names = F)
 
 # model 5 remains the best model
 # refit with gamm4 to account for non-independence within nested site/set
@@ -506,6 +512,208 @@ ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
   geom_ribbon(aes(ymin = HSI_wet - 1.96*se,
                     ymax = HSI_wet + 1.96*se), 
                 alpha = 0.2,
+              lty = 0) +
+  facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.6, 0.8),
+        legend.title = element_blank()) +
+  ylab("HSI wet") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)
+
+anova(mod5a$gam)
+
+ggsave("./Figs/HSIwet_vs_day_length.png", width = 6, height = 3, units = 'in')
+
+## liver FA models -----------------------
+
+# set up things!
+# Libraries
+library(patchwork)
+
+# Load the previous script
+source("code/1_data_import.R")
+
+
+#### PLOTTING ####
+head(codgrosslipid)
+
+##this renames columns and makes new dataframe 'codFA' 
+codFA <- rename(codgrosslipid,"HSIwet" = "HIS_wet") 
+codFA <- rename(codFA,"liverFA" = "per_liver_FA") 
+codFA <- rename(codFA,"muscleFA" = "per_musc_FA") 
+head(codFA)
+
+library(mgcv)
+library(gamm4)
+
+codFA <- codFA %>%
+  mutate(year_fac = as.factor(Year),
+         site_fac = as.factor(`site #`),
+         day_fac = as.factor(J_date))
+
+# plot liver FA by year and Julian day
+ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+ggsave("./output/liverFA_Jdate.png", width = 6.5, 
+       height = 6, units = "in")
+
+
+mod1 <- gam(liverFA ~ s(J_date, k = 4) + year_fac, data = codFA)
+
+summary(mod1)
+
+plot(mod1, se = F, resid = T, pch = 19)
+
+##12/2/22 Mike wanted me to also plot condition by TL and then compare the
+# two models with MuLin to see if condition determined by size or season.
+# plot HSIwet by year and Totoal length
+
+ggplot(codFA, aes(TL, liverFA, color = year_fac))+
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+mod2 <- gam(liverFA ~ s(TL, k = 4) + year_fac, data = codFA)
+
+summary(mod2)
+
+plot(mod2, se = F, resid = T, pch = 19)
+
+install.packages('evaluate')
+install.packages('hexbin')
+
+MuMIn::AICc(mod1, mod2)
+#since I cannot get R to recognize package MuMIn, I will just use AIC 
+#AIC = Akaike's Information Criterion
+AIC(mod1,mod2)
+#and there is BIC which is Schwarz's Bayesian Criterion. 
+#in both AIC and BIC the smaller value is the better fit.
+BIC(mod1,mod2)
+
+####ALISA STOP HERE BECAUSE NEED TO RUN W MUMIN ON MIKE"S MACHINE TO GET NEW PLOTS
+
+
+
+# different curve for Julian date in each year
+mod3 <- gam(liverFA ~ s(J_date, k = 4, by = year_fac), data = codFA)
+summary(mod3)
+plot(mod3)
+
+mod4 <- gam(liverFA ~ s(TL, k = 4, by = year_fac), data = codFA)
+summary(mod4)
+
+MuMIn::AICc(mod1, mod2, mod3, mod4) # model 3 is the best (separate Julian day curves by year)
+summary(mod4)
+plot(mod4, resid = T, pch = 19)
+
+# and plot with random terms included to get better CI estimates
+mod4a <- gamm4(liverFA ~ s(TL, k = 4, by = year_fac),
+               random=~(1|site_fac/day_fac),
+               data = codFA)
+summary(mod4a$gam)
+gam.check(mod4a$gam)
+
+# get the data to plot
+plot_dat <- plot(mod4a$gam)
+
+# restructure into a data frame to plot in ggplot
+plot_this <- data.frame(year = as.factor(rep(c(2018, 2020), each = 100)),
+                        facet = "Day of year", 
+                        liverFA = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit),
+                        se = c(plot_dat[[1]]$se, plot_dat[[2]]$se),
+                        x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x))
+
+my.col = cb[c(2,6)]
+
+mod4a_plot <- ggplot(plot_this, aes(x_value, liverFA, color = year, fill = year)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = liverFA - 1.96*se,
+                  ymax = liverFA + 1.96*se), 
+              alpha = 0.2,
+              lty = 0) +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.6, 0.8),
+        legend.title = element_blank()) +
+  ylab("Liver FA") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)
+
+mod4a_plot
+
+# separate curves for each effect in each year
+mod5 <- gam(liverFA ~ s(J_date, k = 4, by = year_fac) +
+              s(TL, k = 4, by = year_fac), data = codFA)
+summary(mod5)
+
+
+MuMIn::AICc(mod4, mod5)
+
+# model 4 remains the best by far
+
+# mod6 <- gam(liverFA ~ s(J_date, k = 4) +
+#               s(TL, k = 4) + year_fac, data = codFA,
+#             family = "quasibinomial") # use this family for proportion data!
+
+# MuMIn::AICc(mod5, mod6)
+
+mod7 <- gam(liverFA ~ s(J_date, k = 4) +
+              s(TL, k = 4), data = codFA)
+
+# MuMIn::AICc(mod5, mod6, mod7)
+MuMIn::AICc(mod4, mod7)
+
+# out of curiosity, look at a TL model without a year_face term
+mod8 <- gam(liverFA ~ s(TL, k = 4), data = codFA)
+
+summary(mod8)
+plot(mod8, resid = T, pch = 19)
+MuMIn::AICc(mod4, mod8)
+
+# save AICc output
+out <- as.data.frame(MuMIn::AICc(mod1, mod2, mod3, mod4, mod5, mod7))
+
+write.csv(out, "./output/liverFA_AICc.csv", row.names = F)
+
+# model 4 remains the best model
+# refit with gamm4 to account for non-independence within nested site/set
+# and plot
+ggplot(plot_this, aes(x_value, liverFA, color = year, fill = year)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = liverFA - 1.96*se,
+                  ymax = liverFA + 1.96*se), 
+              alpha = 0.2,
+              lty = 0) +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.6, 0.8),
+        legend.title = element_blank()) +
+  ylab("HSI wet") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)
+
+summary(mod5a$gam)
+
+# get the data to plot
+plot_dat <- plot(mod5a$gam)
+
+# restructure into a data frame to plot in ggplot
+plot_this <- data.frame(year = as.factor(rep(c(2018, 2020, 2018, 2020), each = 100)),
+                        facet = rep(c("Day of year", "Total length (mm)"), each = 200), 
+                        liverFA = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
+                        se = c(plot_dat[[1]]$se, plot_dat[[2]]$se, plot_dat[[3]]$se, plot_dat[[4]]$se),
+                        x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x, plot_dat[[3]]$x, plot_dat[[4]]$x))
+
+my.col = cb[c(2,6)]
+
+ggplot(plot_this, aes(x_value, liverFA, color = year, fill = year)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = liverFA - 1.96*se,
+                  ymax = liverFA + 1.96*se), 
+              alpha = 0.2,
               lty = 0) +
   facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
