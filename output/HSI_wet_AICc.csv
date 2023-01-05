@@ -1,7 +1,10 @@
-"df","AICc"
-5.98094704157952,485.936744922767
-4.38246582810947,579.108634094583
-7.9229489369015,461.505057086596
-5.82251662308377,581.013600989977
-11.4299752909501,427.576376449956
-5.98150276794339,466.207065204901
+"Table 3.  Akaike's Information Criterion Comparisons (AICc) of various Generaized Additive Models on HSIwet.  The smaller the AICc, the better the fit.",,,,,
+,,,,,
+,,,,,
+,df,AICc,,Factor 1,Factor 2
+Model 1,6.0,485.9367449,,smoothed Julian date,Year
+Model 2,4.4,579.1086341,,smoothed Total Length,Year
+Model 3,7.9,461.5050571,,smoothed Julian Date by year,
+Model 4,5.8,581.013601,,smoothed Total length by year,
+Model 5,11.4,427.5763764,* best,smoothed Julian Date by year,smoothed total length by year
+Model 6,6.0,466.2070652,,smoothed Julian date,smoothed Total Length

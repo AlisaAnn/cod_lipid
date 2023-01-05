@@ -36,7 +36,7 @@ str(cooktemp)
 ggplot(cooktemp, aes(J_date, Avg_Temp, color = year_fac)) +
   geom_point(alpha = 0.2) +
   theme_bw() +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = T)
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F)
 
 ggsave("./figs/Cook_Bay_Temp1.png", width = 6, height = 4, units = 'in')
 
