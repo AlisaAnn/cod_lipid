@@ -568,6 +568,9 @@ ggsave("./output/liverFA_Jdate.png", width = 6.5,
 # using liver_bi which is liver percent / 100 to yield value between 0 and 1.
 #show plots to Mike and discuss k=2 vs k=-4.  but mod9 will only run w k=4
 
+ggplot(codFA, aes(liver_bi)) +
+  geom_histogram(bins = 20, fill = "grey", color = "black")
+
 ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_point() +
   theme_minimal()+
@@ -579,9 +582,12 @@ ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_smooth(method = "gam", family = "quasibinomial", formula = y ~ s(x, k = 4), se = F)
 
 
-mod9 <- gam(formula = liver_bi ~ s(J_date, k = 4) + year_fac, family = "quasibinomial", data = codFA)
+mod9 <- gam(formula = liver_bi ~ s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+
 
 summary(mod9)
+
+gam.check(mod9)
 
 plot(mod9, se = F, resid = T, pch = 19)
 
@@ -591,32 +597,58 @@ ggplot(codFA, aes(TL, liverFA, color = year_fac))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 
-mod10 <- gam(formula = liver_bi ~ s(TL, k = 4) + year_fac, family = "quasibinomial", data = codFA)
+mod10 <- gam(formula = liver_bi ~ s(TL, k = 6) + year_fac, family = "quasibinomial", data = codFA)
 
-summary(mod10)
+summary(mod10) # mod9 better
+
+gam.check(mod10) # mod9 better
 
 plot(mod10, se = F, resid = T, pch = 19)
 
 #install.packages('evaluate')
 #install.packages('hexbin')
 
+mod11 <- gam(formula = liver_bi ~ s(J_date, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
+gam.check(mod11)
 
-mod11 <- gam(formula = liver_bi ~ s(J_date, k = 4, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod11)
 plot(mod11)
 
-mod12 <- gam(formula = liver_bi ~ s(TL, k = 4, by = year_fac), family = "quasibinomial", data = codFA)
+mod12 <- gam(formula = liver_bi ~ s(TL, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod12)
 plot(mod12, resid = T, pch = 19)
 
-mod13 <- gam(formula = liver_bi ~ s(J_date, k = 4, by = year_fac) +
-             s(TL, k = 4, by = year_fac), family = "quasibinomial", data = codFA)
+# tried this with k = 6...overfit?
+mod13 <- gam(formula = liver_bi ~ s(J_date, k = 5, by = year_fac) +
+             s(TL, k = 5, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod13)
 plot(mod13, resid = T, pch = 19)
+gam.check(mod13)
 
-logLik.gam(mod9, mod10, mod11, mod12)
 
-AIC(mod9, mod10, mod11, mod12, mod13) 
+mod13a <- gamm(formula = liver_bi ~ s(J_date, k = 5, by = year_fac) +
+                 s(TL, k = 5, by = year_fac), correlation = corAR1(), family = "quasibinomial", data = codFA, niterPQL=500)
+
+
+mod14 <- gam(formula = liver_bi ~ s(J_date, k = 5, by = year_fac) +
+               s(TL, k = 5), family = "quasibinomial", data = codFA)
+summary(mod14)
+plot(mod14, resid = T, pch = 19)
+gam.check(mod14)
+
+
+mod15 <- gam(formula = liver_bi ~ s(J_date, k = 5) +
+               s(TL, k = 5), family = "quasibinomial", data = codFA)
+summary(mod15)
+plot(mod15, resid = T, pch = 19)
+gam.check(mod14)
+
+
+
+
+mod13a <- gamm(formula = liver_bi ~ s(J_date, k = 5, by = year_fac) +
+                 s(TL, k = 5, by = year_fac), correlation = corAR1(), family = "quasibinomial", data = codFA, niterPQL=500)
+
 
 mod14 <- gam(formula = liver_bi ~ s(J_date, k = 4) +
               s(TL, k = 4), family = "quasibinomial", data = codFA)
