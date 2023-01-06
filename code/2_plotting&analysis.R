@@ -611,6 +611,7 @@ plot(mod11)
 
 mod12 <- gam(formula = liver_bi ~ s(TL, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod12)
+gam.check(mod12)
 plot(mod12, resid = T, pch = 19)
 
 # tried this with k = 6...overfit?
@@ -651,14 +652,27 @@ summary(mod15a)
 #lowering k value doesn't really change model 15
 
 # out of curiosity, look at a TL model without a year_face term
-mod16 <- gam(formula = liver_bi ~ s(TL, k = 4), family = "quasibinomial", data = codFA)
+mod16 <- gam(formula = liver_bi ~ s(TL, k = 6) +
+               s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
 summary(mod16)
+gam.check(mod16)
 plot(mod16, resid = T, pch = 19)
-#not good, need year or date
-
-##AAA stop here 1/5/23
 
 
+# plot liver FA and muscle FA by year and Julian day
+library(ggplot2)
+ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)+
+  
+
+ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+rlang::last_error()
 ##seems that results same for HSI wet and HSI dry. Try linear model
 linear_mod <- lm (formula = HSI_wet~ HSIdry, data = codcond1)
 summary(linear_mod)
