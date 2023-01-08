@@ -658,14 +658,48 @@ summary(mod16)
 gam.check(mod16)
 plot(mod16, resid = T, pch = 19)
 
+##are results same for muscle FA as liver FA?
+##test two good models: mod 15 and mod16 for muscle:
+mod20 <- gam(formula = muscle_bi ~ s(J_date, k = 5) +
+               s(TL, k = 5), family = "quasibinomial", data = codFA)
+summary(mod20)
+plot(mod20, resid = T, pch = 19)
+gam.check(mod20)
+
+mod21 <- gam(formula = muscle_bi ~ s(TL, k = 6) +
+               s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+summary(mod21)
+gam.check(mod21)
+plot(mod21, resid = T, pch = 19)
+##Yes, these model outputs same for liver or muscle
 
 # plot liver FA and muscle FA by year and Julian day
 library(ggplot2)
-ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
+library("ggpubr")
+theme_set(
+  theme_bw() +
+    theme(legend.position = "top"))
+
+
+M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point() +
   theme_minimal()+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)+
-  
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+plot(M)
+
+L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+plot(L)
+FAfigure <- ggarrange(L, M,
+                    labels = c("A", "B"),
+                    ncol = 2, nrow = 1)
+FAfigure
+ggsave("./Figs/liverFA_muscleFA.png", width = 6, height = 3, units = 'in')
+
+
 
 ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point() +
