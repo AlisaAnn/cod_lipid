@@ -676,10 +676,6 @@ plot(mod21, resid = T, pch = 19)
 # plot liver FA and muscle FA by year and Julian day
 library(ggplot2)
 library("ggpubr")
-theme_set(
-  theme_bw() +
-    theme(legend.position = "top"))
-
 
 M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point() +
@@ -701,12 +697,6 @@ ggsave("./Figs/liverFA_muscleFA.png", width = 6, height = 3, units = 'in')
 
 
 
-ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
-  geom_point() +
-  theme_minimal()+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
-
-rlang::last_error()
 ##seems that results same for HSI wet and HSI dry. Try linear model
 linear_mod <- lm (formula = HSI_wet~ HSIdry, data = codcond1)
 summary(linear_mod)
