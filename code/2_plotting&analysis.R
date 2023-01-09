@@ -669,8 +669,10 @@ mod16c <- gam(formula = liver_bi ~ s(J_date, k = 5, by = year_fac), family = "qu
 summary(mod16c)
 plot(mod16c, resid = T, pch = 19)
 gam.check(mod16c)
+##need to keep length due to above results
+##mod14 the best
 
-##are results same for muscle FA as liver FA?
+##check: are results same for muscle FA as liver FA?
 ##test two good models: mod 15 and mod16 for muscle:
 mod20 <- gam(formula = muscle_bi ~ s(J_date, k = 5) +
                s(TL, k = 5), family = "quasibinomial", data = codFA)
@@ -690,26 +692,47 @@ library(ggplot2)
 library("ggpubr")
 
 M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
-  geom_point() +
-  theme_minimal()+
-  labs(y = "Percent Fatty Acids in Muscle", x = "Day of Year") +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Muscle Fatty Acids", x = "Day of Year") +
+  theme(legend.position = c(0.2, 0.3))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 plot(M)
 
 L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
-  geom_point() +
-  theme_minimal()+
-  labs(y = "Percent Fatty Acids in Liver", x = "Day of Year") +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Liver Fatty Acids", x = "Day of Year") +
+  theme(legend.position = c(0.1, 0.7))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
 
-FAfigure <- ggarrange(L, M,
-                    labels = c("A", "B"),
-                    ncol = 2, nrow = 1)
+TL <- ggplot(data = codFA,
+             aes(x = TL,
+                 y = liverFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw() +
+  labs(y = "% Liver Fatty Acids", x = "Total Length (mm)") 
+  
+plot(TL)  
+
+TLM <- ggplot(data = codFA,
+             aes(x = TL,
+                 y = muscleFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw() +
+  labs(y = "% Muscle Fatty Acids", x = "Total Length (mm)") 
+
+plot(TLM)  
+
+  
+FAfigure <- ggarrange(L, TL, M, TLM,
+                    labels = c("A", "C", "B", "D"),
+                    ncol = 2, nrow = 2)
 FAfigure
 ggsave("./Figs/liverFA_muscleFA.png", width = 6, height = 3, units = 'in')
-
+#this is FIGURE 7
 
 
 ##seems that results same for HSI wet and HSI dry. Try linear model
