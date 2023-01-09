@@ -658,6 +658,18 @@ summary(mod16)
 gam.check(mod16)
 plot(mod16, resid = T, pch = 19)
 
+##curious about removing length as a term
+mod16b <- gam(formula = liver_bi ~ s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+summary(mod16b)
+gam.check(mod16b)
+plot(mod16b, resid = T, pch = 19)
+
+mod16c <- gam(formula = liver_bi ~ s(J_date, k = 5, b = year_fac) +
+               s(TL, k = 5), family = "quasibinomial", data = codFA)
+summary(mod16c)
+plot(mod16c, resid = T, pch = 19)
+gam.check(mod16c)
+
 ##are results same for muscle FA as liver FA?
 ##test two good models: mod 15 and mod16 for muscle:
 mod20 <- gam(formula = muscle_bi ~ s(J_date, k = 5) +

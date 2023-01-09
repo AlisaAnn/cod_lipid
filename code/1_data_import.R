@@ -2,8 +2,7 @@
 
 library(tidyverse)
 library(lubridate)
-
-
+.libPaths()
 
 # Read in the data and rename any columns that need renaming
 codcond <- read_csv("data/cook_cond_data.csv")
