@@ -704,7 +704,7 @@ L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Liver Fatty Acids", x = "Day of Year") +
-  theme(legend.position = c(0.1, 0.7))+
+  theme(legend.position = c(0.2, 0.7))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
 
@@ -731,7 +731,7 @@ FAfigure <- ggarrange(L, TL, M, TLM,
                     labels = c("A", "C", "B", "D"),
                     ncol = 2, nrow = 2)
 FAfigure
-ggsave("./Figs/liverFA_muscleFA.png", width = 6, height = 3, units = 'in')
+ggsave("./Figs/liverFA_muscleFA.png", width = 6, height = 6, units = 'in')
 #this is FIGURE 7
 
 
