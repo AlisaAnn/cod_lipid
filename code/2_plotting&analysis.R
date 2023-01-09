@@ -553,14 +553,15 @@ library(gamm4)
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year),
          site_fac = as.factor(`site #`),
-         day_fac = as.factor(J_date))
-
+         day_fac = as.factor(J_date)) 
+  
 # plot liver FA by year and Julian day
 ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point() +
   theme_minimal()+
+  labs(y = "Percent Fatty Acids in Liver", x = "Day of Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
-
+  
 ggsave("./output/liverFA_Jdate.png", width = 6.5, 
        height = 6, units = "in")
 
@@ -664,8 +665,7 @@ summary(mod16b)
 gam.check(mod16b)
 plot(mod16b, resid = T, pch = 19)
 
-mod16c <- gam(formula = liver_bi ~ s(J_date, k = 5, b = year_fac) +
-               s(TL, k = 5), family = "quasibinomial", data = codFA)
+mod16c <- gam(formula = liver_bi ~ s(J_date, k = 5, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod16c)
 plot(mod16c, resid = T, pch = 19)
 gam.check(mod16c)
@@ -692,6 +692,7 @@ library("ggpubr")
 M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point() +
   theme_minimal()+
+  labs(y = "Percent Fatty Acids in Muscle", x = "Day of Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 plot(M)
@@ -699,8 +700,10 @@ plot(M)
 L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point() +
   theme_minimal()+
+  labs(y = "Percent Fatty Acids in Liver", x = "Day of Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
+
 FAfigure <- ggarrange(L, M,
                     labels = c("A", "B"),
                     ncol = 2, nrow = 1)
