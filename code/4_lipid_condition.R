@@ -1,8 +1,6 @@
 # This is the plotting of condition and FA data
 ##no dried weights, so no Kdry or HSIdry here. go to Rscript2 for those
 
-#remove.packages("rlang")
-#install.packages("rlang")
 
 # Libraries
 library(patchwork)
@@ -78,8 +76,11 @@ ggplot(data = codFA,
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() 
 
-b <- lm(formula = TL ~ liverFA, data = codFA)
+b <- lm(formula = liverFA ~ TL, data = codFA)
 summary (b)
+
+c <- gam(formula = liverFA ~ TL, data = codFA)
+summary (c)
 
 ##begin MuMIn analysis to look at condition/lipid by Julian date
 ##___________looking at HSI, liverFA, and muscle by J_date_____
