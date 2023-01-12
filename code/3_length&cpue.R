@@ -7,9 +7,9 @@ library(patchwork)
 getOption("defaultPackages")
 install.packages("evaluate")
 install.packages("MuMIn")
-library (MuMIn) #this doesn't work
+library (MuMIn) #this doesn't work because MuMIN wasn't updated. WOrks on Mike's 4.1 version of Rscript
 
-
+library(tidyverse)
 
 # Load the previous script
 source("code/1_data_import.R")
@@ -94,19 +94,40 @@ ggplot(codlen, aes(J_date, TL, color = year_fac)) +
 
 ggsave("./figs/length_by_date.png", width = 6, height = 4, units = 'in')
 
-# plot 2018-2020 only
+
+# above plot has 2019. want to plot 2018-2020 only
 ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, TL, color = year_fac)) +
   geom_point() +
   theme_bw()+
+  theme(legend.position = c(0.2, 0.7))+
+  labs(x = "Day of Year", y = "Total Length (mm)")+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 6), se = F)
 
 ggsave("./figs/length_by_date_2018_2020.png", width = 6, height = 4, units = 'in')
 
-mod1 <- mgcv::gam(TL ~ s(J_date, k = 6, by = year_fac), data = codlen)
+head(codlen)
+ 
+codlen1820 <- filter(codlen, year == "2018", year == "2020")
+#above makes df without 2019
+
+
+mod1 <- mgcv::gam(TL ~ s(J_date, k = 6, by = year_fac), data = codlen1820)
 mod2 <- mgcv::gam(TL ~ s(J_date, k = 6), data = codlen)
+##want to figure out how to run this without 2019. changed mod1 and it gives error
 
-MuMIn::AICc(mod1, mod2) # different curves for different years = better model
+#MuMIn::AICc(mod1, mod2) # different curves for different years = better model
+AIC(mod1,mod2)
+summary(mod1)
 
+
+ggplot(data = codlen, aes(x = J_date, y = TL, color = year_fac)) +
+  geom_boxplot(width = 0.3) +
+  geom_jitter(alpha = 0.5)+
+  theme(legend.position = "bottom") +
+  theme_bw()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F) +
+  facet_wrap(~year)
+#doesn't really work to have boxplot with continuous xaxis variable. stick with above
 
 ###############PLOTS of CPUE##
 
