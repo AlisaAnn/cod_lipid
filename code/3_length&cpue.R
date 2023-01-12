@@ -106,16 +106,19 @@ ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, TL, c
 ggsave("./figs/length_by_date_2018_2020.png", width = 6, height = 4, units = 'in')
 
 head(codlen)
- 
-codlen1820 <- filter(codlen, year == "2018", year == "2020")
+mod1 <- mgcv::gam(TL ~ s(J_date, k = 6, by = year_fac), data = codlen)
+mod2 <- mgcv::gam(TL ~ s(J_date, k = 6), data = codlen)
+#MuMIn::AICc(mod1, mod2) # different curves for different years = better model
+AIC(mod1,mod2)
+summary(mod1)
+
+##But want to run this without 2019. 
+codlen1820 <- filter(codlen, year == "2018" | year == "2020")
 #above makes df without 2019
-
-
+distinct(codlen1820, year)
 mod1 <- mgcv::gam(TL ~ s(J_date, k = 6, by = year_fac), data = codlen1820)
 mod2 <- mgcv::gam(TL ~ s(J_date, k = 6), data = codlen)
-##want to figure out how to run this without 2019. changed mod1 and it gives error
-
-#MuMIn::AICc(mod1, mod2) # different curves for different years = better model
+# # different curves for different years. mod1 better than mod2
 AIC(mod1,mod2)
 summary(mod1)
 
