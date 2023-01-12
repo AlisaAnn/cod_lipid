@@ -94,9 +94,11 @@ Wgt_plot <- ggplot(data=codprey.plot, aes(NMDS1, NMDS2))+
   scale_linetype_manual(values = "solid") 
 plot(Wgt_plot)
 
-## Look at the effects of environmental variables on axes
-##See if can figure out how to test if months explain var in axes instead of season
-#Continuous Environmental Variables + Factors
+## begin here!!!!!!!
+### Look at the effects of environmental variables on axes
+##Continuous varables + Factors
+#results of head(en1) choose month 
+
 #AugEnvDataConFact <- AugOrd[,c(4, 7,8,10:14,18,22,26:31,33,34)]
 #head(AugEnvDataConFact)
 #en <- envfit(AugMDS, AugEnvDataConFact, permutations = 999, na.rm = T)
