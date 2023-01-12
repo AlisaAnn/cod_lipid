@@ -164,8 +164,12 @@ codcpue <- codcpue %>%
 # plot cpue by year and Julian day
 ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
-  theme_minimal()+
+  theme_bw()+
+  theme(legend.position = c(0.2, 0.5)) +
+  scale_colour_discrete(name = "Year") +
+  labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
 ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
 
 ## NB: change to colorblind palette, clean up
