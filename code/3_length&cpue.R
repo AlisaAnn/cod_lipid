@@ -250,17 +250,12 @@ codcpue %>%
   ylab("Age-0 Pacific cod")
 
 
-##try to plot to show males last to be in nursery area
+## Figure 5 -plot to show males last to be in nursery area
 head(codcond)
 distinct(codcond, age) #age-0 and age-1
 distinct(codcond1,age) #only age-0
 
-codcond1 %>%
-  ggplot(aes(x = Month, y = sex, fill = as.factor(sex))) +
-  geom_count()+
-  theme_minimal()+
-  ylab("Count of age-0 Pacific cod sex")
- 
+
 codcond1%>%
   ggplot(aes(x = Month, fill = as.factor(sex))) +
   geom_bar()+
@@ -277,6 +272,8 @@ codcond1%>%
   xlab("Month Captured")+
   labs(fill = "Sex")+
   theme(legend.position = c(0.9,0.7))
+
+ggsave("./figs/sex_by_month.png", width = 6, height = 4, units = 'in')
 
 ##AA stopped here to try to get grey/black
 codcond1%>%
