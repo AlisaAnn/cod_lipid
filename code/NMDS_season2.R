@@ -113,19 +113,35 @@ head(en)
 head(preyEnvData)
 preyEnvDataCont <- preyEnvData[,c(7, 8, 9, 10)]
 head(preyEnvDataCont)
+names(preyEnvDataCont)[1]<-paste("Day of Year")
+names(preyEnvDataCont)[2]<-paste("Temp")
+names(preyEnvDataCont)[3]<-paste("Salinity")
+names(preyEnvDataCont)[4]<-paste("TL (mm)")
+head(preyEnvDataCont)
+
 en1 <- envfit(prey_wgtMDS3, preyEnvDataCont, permutations = 999, na.rm = T)
+head(en1)
+
+#### Get the vectors the correct length
+en_coord_cont = as.data.frame(scores(en1, "vectors")) * ordiArrowMul(en2)
+
+#### Plot the NMS with environmental variable overlay in Base R ###
+#quartz()  this is used w macOS system
+plot(prey_wgtMDS3, type = 't', display = c('species'))
+plot(en1)
 
 head(en1)
 #so now look at en1 and based on en1
 #Subset data with envfit R^2 > 0.2 based on list generated in head(en1)
 #Restructure dataframe to have only Day of Year and TL
-preyEnvDataCut <- preyEnvDataCont[,c(1,4)]
+preyEnvDataCut <- preyEnvDataCont[,c(2, 3, 4)]
 
-names(preyEnvDataCut)[1]<-paste("Day of Year")
-names(preyEnvDataCut)[2]<-paste("TL (mm)")
+names(preyEnvDataCut)[1]<-paste("Temperature")
+names(preyEnvDataCut)[2]<-paste("Salinity")
+names(preyEnvDataCut)[3]<-paste("TL (mm)")
 head(preyEnvDataCut)
 
-en2 <- envfit(prey_wgtMDS, preyEnvDataCut, permutations = 999, na.rm = T)
+en2 <- envfit(prey_wgtMDS3, preyEnvDataCut, permutations = 999, na.rm = T)
 head(en2)
 
 #### Get the vectors the correct length
@@ -162,13 +178,15 @@ head(en_prey)
 #select the species that have R^2 with significance
 #first make the plot of env var and species
 
-preywgt_cut <- prey_wgts3[,c(1, 2, 3, 5, 8)]
+preywgt_cut <- prey_wgts3[,c(1, 2, 3, 5, 7, 8, 9)]
 head(preywgt_cut)
 preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
 preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
 preywgt_cut <- rename(preywgt_cut,"Polychaete" = "Poly4")
 preywgt_cut <- rename(preywgt_cut,"Caprellidae" = "Caprellidae4")
 preywgt_cut <- rename(preywgt_cut,"Shrimp" = "Shrimp4")
+preywgt_cut <- rename(preywgt_cut,"Cumacea" = "cumacea4")
+preywgt_cut <- rename(preywgt_cut,"Corophiidae" = "Corphiidae4")
 head(preywgt_cut)
 
 en_prey_cut <- envfit(prey_wgtMDS3, preywgt_cut, permutations = 999, na.rm = T)
