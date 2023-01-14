@@ -164,6 +164,13 @@ head(en_prey)
 
 preywgt_cut <- prey_wgts3[,c(1, 2, 3, 5, 8)]
 head(preywgt_cut)
+preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
+preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
+preywgt_cut <- rename(preywgt_cut,"Polychaete" = "Poly4")
+preywgt_cut <- rename(preywgt_cut,"Caprellidae" = "Caprellidae4")
+preywgt_cut <- rename(preywgt_cut,"Shrimp" = "Shrimp4")
+head(preywgt_cut)
+
 en_prey_cut <- envfit(prey_wgtMDS3, preywgt_cut, permutations = 999, na.rm = T)
 head(en_prey_cut)
 prey_coord = as.data.frame(scores(en_prey_cut, "vectors")) * ordiArrowMul(en_prey_cut)
@@ -177,8 +184,8 @@ Wgt_prey <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
   scale_linetype_manual(values = "solid") +
   #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
   #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
-#  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
-#  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.25))+
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
+  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.25))+
   theme(axis.text=element_text(size=15), axis.title=element_text(size=14,face="bold")) 
 print(Wgt_prey)
 
@@ -191,7 +198,7 @@ Wgt_prey <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
   #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
   #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
   geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
-  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.25))+
+  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.15))+
   theme(axis.text=element_text(size=15), axis.title=element_text(size=14,face="bold")) 
 print(Wgt_prey)
 ggsave("./figs/nmds_species.png", width = 6, height = 4, units = 'in')
