@@ -71,6 +71,22 @@ a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
 ##this shows R^2 = 0.7314, n = 194
 
+
+#for poster - compare TEMPERATURE w liver FA with HSIwet
+ggplot(data = codFA,
+       aes(x = temp,
+           y = liverFA, color = Year)) +
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "Water temperature", y = "percent Liver Fatty Acid") +
+  theme_bw() +
+  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+
+ggsave("./figs/Temp_liverFA.png", width = 6, height = 4, units = 'in') 
+b <- lm(formula = liverFA ~ temp, data = codFA)
+summary (b)
+
+
+
 #can we compare muscle FA with Kwet_evic
 ggplot(data = codFA,
        aes(x = Kwet_evic,
