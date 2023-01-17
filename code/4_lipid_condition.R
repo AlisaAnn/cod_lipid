@@ -108,3 +108,40 @@ mod3 <- gam(muscle_bi ~ s(J_date, k = 4) +
             family = quasibinomial)
 plot(mod3)
 summary(mod3)
+
+##make a plot for AMSS poster w liver FA by month
+
+# plot liver FA and muscle FA by year and Julian day
+library(ggplot2)
+library("ggpubr")
+
+M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Muscle Fatty Acids", x = "Day of Year") +
+  theme(legend.position = c(0.2, 0.2))+
+  scale_colour_discrete(name = "Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+plot(M)
+
+L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Liver Fatty Acids", x = "Day of Year") +
+  theme(legend.position = c(0.2, 0.8))+
+  scale_colour_discrete(name = "Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+plot(L)
+
+
+
+FAfigure <- ggarrange(L, M,
+                      labels = c("A", "B"),
+                      ncol = 2, nrow = 1)
+FAfigure
+ggsave("./Figs/liverFA_poster.png", width = 6, height = 4, units = 'in')
+#this is for poster
+
+
+
