@@ -57,6 +57,20 @@ ggplot(data = codFA,
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
 
+#for poster - compare liver FA with HSIwet
+ggplot(data = codFA,
+       aes(x = HSIwet,
+           y = liverFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "HSI wet", y = "percent Liver Fatty Acids") +
+  theme_bw() +
+  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+
+ggsave("./figs/HSIwet_liverFA.png", width = 6, height = 4, units = 'in') 
+a <- lm(formula = HSIwet ~ liverFA, data = codFA)
+summary (a)
+##this shows R^2 = 0.7314, n = 194
+
 #can we compare muscle FA with Kwet_evic
 ggplot(data = codFA,
        aes(x = Kwet_evic,
