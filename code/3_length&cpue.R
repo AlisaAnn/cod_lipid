@@ -160,18 +160,18 @@ library(mgcv)
 codcpue <- codcpue %>%
   mutate(log_cpue = log(Cod+1),
          year_fac = as.factor(year))
+scale_colour_discrete(name = "Year") +
+  labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
 
 # plot cpue by year and Julian day
 ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
   theme_bw()+
   theme(legend.position = c(0.2, 0.5)) +
-  scale_colour_discrete(name = "Year") +
-  labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
-
-ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
-
+  
 ## NB: change to colorblind palette, clean up
 
 mod1 <- gam(log_cpue ~ s(Julian_date, k = 4) + year_fac, data = codcpue)

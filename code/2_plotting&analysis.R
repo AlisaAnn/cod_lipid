@@ -193,6 +193,8 @@ ggplot(data = codcond1,
   theme_minimal()+
   theme(legend.position = "bottom")+
   facet_wrap(~year)
+ggsave(filename = "output/HSIwet_month.png", width = 6.5, 
+       height = 6, units = "in")
 
 ggplot(data = codcond1,
        aes(x = Month,
@@ -695,7 +697,8 @@ M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Muscle Fatty Acids", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.3))+
+  theme(legend.position = c(0.2, 0.2))+
+  scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 plot(M)
@@ -704,7 +707,8 @@ L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Liver Fatty Acids", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.7))+
+  theme(legend.position = c(0.2, 0.8))+
+  scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
 
