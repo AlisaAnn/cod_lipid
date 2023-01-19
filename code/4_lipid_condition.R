@@ -57,12 +57,12 @@ ggplot(data = codFA,
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
 
-#for poster - compare liver FA with HSIwet
+#for poster and paper - compare liver FA with HSIwet
 ggplot(data = codFA,
        aes(x = HSIwet,
            y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
-  labs(x = "HSI wet", y = "percent Liver Fatty Acids") +
+  labs(x = "HSI wet", y = "% Liver Fatty Acids") +
   theme_bw() +
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 
@@ -70,6 +70,60 @@ ggsave("./figs/HSIwet_liverFA.png", width = 6, height = 4, units = 'in')
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
 ##this shows R^2 = 0.7314, n = 194
+
+##compare muscleFA with Fulton Wet
+ggplot(data = codFA,
+       aes(x = Kwet,
+           y = muscleFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  labs(x = "Fulton's Index (K wet)", y = "% Muscle Fatty Acids") +
+  theme_bw() +
+  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+
+ggsave("./figs/Kwet_muscleFA.png", width = 6, height = 4, units = 'in') 
+m <- lm(formula = Kwet ~ muscleFA, data = codFA)
+summary (m)
+##this shows R^2 = 0.02824, n = 194
+
+
+# Now do side by side plot of lipids by gross condition factors (wet)
+library(ggplot2)
+library("ggpubr")
+
+
+CL <- ggplot(codFA, aes(HSIwet, liverFA)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic index (HSI wet)") +
+  theme(legend.position = c(0.2, 0.8))+
+  geom_smooth(method = "lm", formula = (y ~x), color = 1)
+plot(CL)
+
+CM <- ggplot(data = codFA,
+              aes(x = Kwet,
+                  y = muscleFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw() +
+  labs(y = "% Muscle Fatty Acids", x = "Fulton's Condition Factor (Kwet)") +
+  geom_smooth(method = "lm", formula = (y ~x), color = 1)
+
+plot(CM)  
+
+Condfigure <- ggarrange(CL, CM,
+                      labels = c("A", "B"),
+                      ncol = 2, nrow = 1)
+Condfigure
+ggsave("./Figs/conditionFig.png", width = 6, height = 6, units = 'in')
+#this is FIGURE Condition
+
+
+
+
+
+
+
+
+
 
 
 #for poster - compare TEMPERATURE w liver FA with HSIwet
