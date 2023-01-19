@@ -94,7 +94,7 @@ library("ggpubr")
 CL <- ggplot(codFA, aes(HSIwet, liverFA)) +
   geom_point(size = 3) +
   theme_bw()+
-  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic index (HSI wet)") +
+  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic Index (HSI wet)") +
   theme(legend.position = c(0.2, 0.8))+
   geom_smooth(method = "lm", formula = (y ~x), color = 1)
 plot(CL)
