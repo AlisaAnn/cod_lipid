@@ -134,7 +134,7 @@ P3 <- ggplot(codprey.plot3, aes(NMDS1, cumacea4)) +
 
 plot(P3)
 
-P4 <- ggplot(codprey.plot3, aes(NMDS1, Jul_date, color = Month)) +
+P4 <- ggplot(codprey.plot3, aes(NMDS1, Jul_date)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "Day of year", x = "NMDS1") +
@@ -146,7 +146,7 @@ plot(P4)
 P21 <- ggplot(codprey.plot3, aes(NMDS2, Harp4)) +
   geom_point(size = 3) +
   theme_bw()+
-  labs(y = "Harpacticoid copepod", x = "NMDS2") +
+  labs(y = "Harpacticoid", x = "NMDS2") +
   theme(legend.position = c(0.2, 0.2))+
   geom_smooth(method = "lm", formula = y ~ x, se = F)
 
@@ -197,9 +197,9 @@ P32 <- ggplot(codprey.plot3, aes(NMDS3, Corphiidae4)) +
 
 plot(P32)
 
-NMDSfigure <- ggarrange(P1, P21, P31, P2, P22, P32, P3, P23,
-                      labels = c("A", "D", "G", "B", "E", "H", "C", "F"),
-                      ncol = 3, nrow = 3)
+NMDSfigure <- ggarrange(P1, P21, P31, P2, P22, P32, P3, P23, , P4, P24,,
+                      labels = c("A", "D", "G", "B", "E", "H", "C", "F",, "T",),
+                      ncol = 3, nrow = 4)
 NMDSfigure
 ggsave("./Figs/NMDSfactors.png", width = 6, height = 6, units = 'in')
 #this is FIGURE NMDS
