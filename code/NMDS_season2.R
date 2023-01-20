@@ -71,11 +71,38 @@ codprey.plot3<-cbind(prey_w2, NMDS1, NMDS2, NMDS3)
 head(codprey.plot3)
 
 ##save file w NMDS 3 dimensions. 
-write.table(codprey.plot3, file = "output/nmds_results_new3.csv")
+write.csv(codprey.plot3, file = "output/nmds_results_new3.csv")
 
 #### Plot the NMS in Base R ###
 
 plot(prey_wgtMDS3, type = 't', display = c('species'))
+
+### scatter plot above shows polycheate are NMDS 1+ and caprellidate are NMDS1 (-)
+## want more scatters to see how the axes are related to species
+plot1 <- codprey.plot3 %>%
+  ggplot(aes(x = NMDS1, y = TL, color = Month)) +
+  geom_point()+
+  xlab("NMDS 1")+
+  theme_minimal()
+plot1 
+
+plot1 <- codprey.plot3 %>%
+  ggplot(aes(x = NMDS2, y = TL, color = Month)) +
+  geom_point()+
+  xlab("NMDS 2")+
+  theme_minimal()
+plot1 
+
+
+plot1 <- codprey.plot3 %>%
+  ggplot(aes(x = NMDS3, y = TL, color = Month)) +
+  geom_point()+
+  xlab("NMDS 3")+
+  theme_minimal()
+plot1 
+
+
+
 
 #### Plot the NMS in ggplot #####
 
