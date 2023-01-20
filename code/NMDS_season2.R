@@ -76,9 +76,11 @@ write.csv(codprey.plot3, file = "output/nmds_results_new3.csv")
 #### Plot the NMS in Base R ###
 
 plot(prey_wgtMDS3, type = 't', display = c('species'))
-
 ### scatter plot above shows polycheate are NMDS 1+ and caprellidate are NMDS1 (-)
-## want more scatters to see how the axes are related to species
+
+## Alisa diverge from HT code to see what variables relate to NMDS axes
+## want more detailed scatters to see how the axes are related to species
+## go thru each of next 3 plots and change yaxis to diff species and diff environ variables
 plot1 <- codprey.plot3 %>%
   ggplot(aes(x = NMDS1, y = TL, color = Month)) +
   geom_point()+
@@ -101,10 +103,109 @@ plot1 <- codprey.plot3 %>%
   theme_minimal()
 plot1 
 
+# now plot sig variables in scatter FIGURE
+library(ggplot2)
+library("ggpubr")
+
+P1 <- ggplot(codprey.plot3, aes(NMDS1, Poly4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Polychaete", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P1)
+
+P2 <- ggplot(codprey.plot3, aes(NMDS1, Caprellidae4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Caprellidae", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P2)
+
+P3 <- ggplot(codprey.plot3, aes(NMDS1, cumacea4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Cumacea", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P3)
+
+P4 <- ggplot(codprey.plot3, aes(NMDS1, Jul_date, color = Month)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Day of year", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P4)
+
+P21 <- ggplot(codprey.plot3, aes(NMDS2, Harp4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Harpacticoid copepod", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P21)
+
+P22 <- ggplot(codprey.plot3, aes(NMDS2, cumacea4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Cumacea", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P22)
+
+P23 <- ggplot(codprey.plot3, aes(NMDS2, Shrimp4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Shrimp", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P23)
+
+P24 <- ggplot(codprey.plot3, aes(NMDS2, TL)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Total Length (mm)", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P24)
+
+P31 <- ggplot(codprey.plot3, aes(NMDS3, crab4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Crab", x = "NMDS3") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P31)
+
+P32 <- ggplot(codprey.plot3, aes(NMDS3, Corphiidae4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Corophiidae", x = "NMDS3") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P32)
+
+NMDSfigure <- ggarrange(P1, P21, P31, P2, P22, P32, P3, P23,
+                      labels = c("A", "D", "G", "B", "E", "H", "C", "F"),
+                      ncol = 3, nrow = 3)
+NMDSfigure
+ggsave("./Figs/NMDSfactors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS
 
 
-
-#### Plot the NMS in ggplot #####
+#### Plot the NMS in ggplot #####  back to Hillary script####
 
 safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#117733", "#332288", "#AA4499", 
                              "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
