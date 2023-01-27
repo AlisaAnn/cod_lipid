@@ -88,24 +88,24 @@ plot1 <- codprey.plot3 %>%
   theme_minimal()
 plot1 
 
-plot1 <- codprey.plot3 %>%
-  ggplot(aes(x = NMDS2, y = TL, color = Month)) +
-  geom_point()+
-  xlab("NMDS 2")+
-  theme_minimal()
-plot1 
-
-
-plot1 <- codprey.plot3 %>%
+plot3t <- codprey.plot3 %>%
   ggplot(aes(x = NMDS3, y = TL, color = Month)) +
   geom_point()+
   xlab("NMDS 3")+
   theme_minimal()
-plot1 
+plot3t 
+
+plot34 <- codprey.plot3 %>%
+  ggplot(aes(x = NMDS3, y = Jul_date, color = Month)) +
+  geom_point()+
+  xlab("NMDS 3")+
+  theme_minimal()
+plot34 
 
 # now plot sig variables in scatter FIGURE
 library(ggplot2)
 library("ggpubr")
+library(purrr)
 
 P1 <- ggplot(codprey.plot3, aes(NMDS1, Poly4)) +
   geom_point(size = 3) +
@@ -125,10 +125,10 @@ P2 <- ggplot(codprey.plot3, aes(NMDS1, Caprellidae4)) +
 
 plot(P2)
 
-P3 <- ggplot(codprey.plot3, aes(NMDS1, cumacea4)) +
+P3 <- ggplot(codprey.plot3, aes(NMDS1, Harp4)) +
   geom_point(size = 3) +
   theme_bw()+
-  labs(y = "Cumacea", x = "NMDS1") +
+  labs(y = "Harpacticoid", x = "NMDS1") +
   theme(legend.position = c(0.2, 0.2))+
   geom_smooth(method = "lm", formula = y ~ x, se = F)
 
@@ -152,10 +152,10 @@ P21 <- ggplot(codprey.plot3, aes(NMDS2, Harp4)) +
 
 plot(P21)
 
-P22 <- ggplot(codprey.plot3, aes(NMDS2, cumacea4)) +
+P22 <- ggplot(codprey.plot3, aes(NMDS2, Gammarid4)) +
   geom_point(size = 3) +
   theme_bw()+
-  labs(y = "Cumacea", x = "NMDS2") +
+  labs(y = "Gammarid", x = "NMDS2") +
   theme(legend.position = c(0.2, 0.2))+
   geom_smooth(method = "lm", formula = y ~ x, se = F)
 
@@ -179,10 +179,10 @@ P24 <- ggplot(codprey.plot3, aes(NMDS2, TL)) +
 
 plot(P24)
 
-P31 <- ggplot(codprey.plot3, aes(NMDS3, crab4)) +
+P31 <- ggplot(codprey.plot3, aes(NMDS3, Gammarid4)) +
   geom_point(size = 3) +
   theme_bw()+
-  labs(y = "Crab", x = "NMDS3") +
+  labs(y = "Gammarid", x = "NMDS3") +
   theme(legend.position = c(0.2, 0.2))+
   geom_smooth(method = "lm", formula = y ~ x, se = F)
 
@@ -197,13 +197,28 @@ P32 <- ggplot(codprey.plot3, aes(NMDS3, Corphiidae4)) +
 
 plot(P32)
 
-NMDSfigure <- ggarrange(P1, P21, P31, P2, P22, P32, P3, P23, , P4, P24,,
-                      labels = c("A", "D", "G", "B", "E", "H", "C", "F",, "T",),
+P33 <- ggplot(codprey.plot3, aes(NMDS3, Caprellidae4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Caprellidae", x = "NMDS3") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P33)
+
+NMDSfigure <- ggarrange(P1, P21, P31, P2, P22, P32, P3, P23, P33, P4, P24,
+                      labels = c("A", "E", "I", "B", "F", "J", "C", "G", "K", "D","H"),
                       ncol = 3, nrow = 4)
 NMDSfigure
-ggsave("./Figs/NMDSfactors.png", width = 6, height = 6, units = 'in')
-#this is FIGURE NMDS
+ggsave("./Figs/NMDS123factors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS with all axes
 
+NMDSfigure <- ggarrange(P1, P21, P2, P22, P3, P23, P4, P24,
+                        labels = c("A", "E", "B", "F", "C", "G", "D","H"),
+                        ncol = 2, nrow = 4)
+NMDSfigure
+ggsave("./Figs/NMDSfactors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS with axes 1 and 2 because axis 3 doesn't correspond to environ variable
 
 #### Plot the NMS in ggplot #####  back to Hillary script####
 
@@ -251,7 +266,7 @@ en1 <- envfit(prey_wgtMDS3, preyEnvDataCont, permutations = 999, na.rm = T)
 head(en1)
 
 #### Get the vectors the correct length
-en_coord_cont = as.data.frame(scores(en1, "vectors")) * ordiArrowMul(en2)
+en_coord_cont = as.data.frame(scores(en1, "vectors")) * ordiArrowMul(en1)
 
 #### Plot the NMS with environmental variable overlay in Base R ###
 #quartz()  this is used w macOS system
@@ -304,17 +319,25 @@ head(prey_wgts3)
 head(en_prey)
 # Make a subset of Prey Variables with R^2 > 0.1 that are important to final NMDS by season
 #select the species that have R^2 with significance
+en_prey1 <- envfit(NMDS1, prey_wgts3, permutations = 999, na.rm = T)
+head(prey_wgts3)
+head(en_prey1)
+
+en_prey2 <- envfit(NMDS2, prey_wgts3, permutations = 999, na.rm = T)
+head(prey_wgts3)
+head(en_prey2)
+
+en_prey3 <- envfit(NMDS3, prey_wgts3, permutations = 999, na.rm = T)
+head(prey_wgts3)
+head(en_prey3)
 #first make the plot of env var and species
 
-preywgt_cut <- prey_wgts3[,c(1, 2, 3, 5, 7, 8, 9)]
+preywgt_cut <- prey_wgts3[,c(1, 2, 3, 5)]
 head(preywgt_cut)
 preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
 preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
 preywgt_cut <- rename(preywgt_cut,"Polychaete" = "Poly4")
 preywgt_cut <- rename(preywgt_cut,"Caprellidae" = "Caprellidae4")
-preywgt_cut <- rename(preywgt_cut,"Shrimp" = "Shrimp4")
-preywgt_cut <- rename(preywgt_cut,"Cumacea" = "cumacea4")
-preywgt_cut <- rename(preywgt_cut,"Corophiidae" = "Corphiidae4")
 head(preywgt_cut)
 
 en_prey_cut <- envfit(prey_wgtMDS3, preywgt_cut, permutations = 999, na.rm = T)
