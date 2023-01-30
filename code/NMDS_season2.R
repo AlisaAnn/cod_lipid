@@ -69,6 +69,9 @@ NMDS3 <- prey_wgtMDS3$points[,3]
 #Add them to the ordination data plot
 codprey.plot3<-cbind(prey_w2, NMDS1, NMDS2, NMDS3)
 head(codprey.plot3)
+str(codprey.plot3)
+codprey.plot3 <- codprey.plot3 %>%
+  mutate(Year_fac = as.factor(Year))
 
 ##save file w NMDS 3 dimensions. 
 write.csv(codprey.plot3, file = "output/nmds_results_new3.csv")
@@ -77,6 +80,7 @@ write.csv(codprey.plot3, file = "output/nmds_results_new3.csv")
 
 plot(prey_wgtMDS3, type = 't', display = c('species'))
 ### scatter plot above shows polycheate are NMDS 1+ and caprellidate are NMDS1 (-)
+
 
 ## Alisa diverge from HT code to see what variables relate to NMDS axes
 ## want more detailed scatters to see how the axes are related to species
@@ -344,11 +348,11 @@ en_prey_cut <- envfit(prey_wgtMDS3, preywgt_cut, permutations = 999, na.rm = T)
 head(en_prey_cut)
 prey_coord = as.data.frame(scores(en_prey_cut, "vectors")) * ordiArrowMul(en_prey_cut)
 
-#### Plot the NMS in ggplot with prey vector overlay for Month ####
+#### Plot the NMS in ggplot with prey vector overlay for Yea_factor (or can change Year to Month) ####
 head(codprey.plot3)
 Wgt_prey <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
-  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=Month), show.legend=F, position=position_jitter(.1))+
-  stat_ellipse(aes(fill=Month, color = Month), alpha=.2,type='t',size =1, geom="polygon")+ 
+  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=Year_fac), show.legend=F, position=position_jitter(.1))+
+  stat_ellipse(aes(fill=Year_fac, color = Year_fac), alpha=.2,type='t',size =1, geom="polygon")+ 
   theme_classic()+
   scale_linetype_manual(values = "solid") +
   #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
@@ -385,3 +389,120 @@ mrpp(prey_wgts3, preyEnvData$Month, distance = 'bray', weight = 3)
 ### ISA By Month ####
 indval = multipatt(prey_wgts3, preyEnvData$Month, control = how(nperm=999))
 summary(indval)
+
+
+### ISA by year
+class(preyEnvData$Year)
+Year.vector <-as.vector(preyEnvData$Year)
+indval = multipatt(prey_wgts3,Year.vector, control = how(nperm=999))
+summary(indval)
+
+# now plot sig variables in scatter FIGURE only for NMDS1 and NMDS 2
+library(ggplot2)
+library("ggpubr")
+library(purrr)
+
+P11 <- ggplot(codprey.plot3, aes(NMDS1, Poly4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Polychaete", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P11)
+
+P12 <- ggplot(codprey.plot3, aes(NMDS1, Caprellidae4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Caprellidae", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P12)
+
+P13 <- ggplot(codprey.plot3, aes(NMDS1, Harp4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Harpacticoid", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P13)
+
+P14 <- ggplot(codprey.plot3, aes(NMDS1, Gammarid4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Gammarid", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P14)
+
+P15 <- ggplot(codprey.plot3, aes(NMDS1, TL)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Total Length (mm)", x = "NMDS1") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P15)
+
+P21 <- ggplot(codprey.plot3, aes(NMDS2, Poly4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Polychaete", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P21)
+
+P22 <- ggplot(codprey.plot3, aes(NMDS2, Caprellidae4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Caprellidae", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P22)
+
+P23 <- ggplot(codprey.plot3, aes(NMDS2, Harp4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Harpacticoid", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P23)
+
+P24 <- ggplot(codprey.plot3, aes(NMDS2, Gammarid4)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Gammarid", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P24)
+
+P25 <- ggplot(codprey.plot3, aes(NMDS2, TL)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "Total Length (mm)", x = "NMDS2") +
+  theme(legend.position = c(0.2, 0.2))+
+  geom_smooth(method = "lm", formula = y ~ x, se = F)
+
+plot(P25)
+
+
+NMDSfigure <- ggarrange(P11, P21, P12, P22, P13, P23, P14, P24, P15, P25,
+                        labels = c("A", "F", "B", "G", "C", "H", "D","I", "E", "J" ),
+                        ncol = 2, nrow = 5)
+NMDSfigure
+ggsave("./Figs/NMDS12_all_Factors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS with 2 axes, all sig species
+
+NMDSfigure <- ggarrange(P11, P23, P12, P24, P13, P25, P15,
+                        labels = c("A", "E", "B", "F", "C", "G", "D"),
+                        ncol = 2, nrow = 4)
+NMDSfigure
+ggsave("./Figs/NMDS12_select_factors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS with axes 1 and 2 because axis 3 doesn't correspond to environ variable
