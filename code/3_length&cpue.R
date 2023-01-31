@@ -100,6 +100,7 @@ ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, TL, c
   geom_point() +
   theme_bw()+
   theme(legend.position = c(0.2, 0.7))+
+  scale_colour_discrete(name = "Year") +
   labs(x = "Day of Year", y = "Total Length (mm)")+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 6), se = F)
 
