@@ -29,22 +29,6 @@ ggplot(data = codFA,
 
 ggsave("./figs/HSIwet_Kwet.png", width = 6, height = 4, units = 'in')  
 
-#now scatterplot of HSIwet and whole body fatty acid
-#I think this doesn't make sense, so stop
-#ggplot(data = codFA,
-   #    aes(x = HSIwet,
-    #       y = wholeFA,
-     #      color = Month)) +
-  #geom_point(size = 3, alpha = 0.8) +
-  #theme_minimal() 
-
-#now scatterplot of Kwet_evic and whole body fatty acid
-#ggplot(data = codFA,
-   #    aes(x = Kwet_evic,
-    #       y = wholeFA,
-     #      color = Month)) +
-  #geom_point(size = 3, alpha = 0.8) +
-  #theme_minimal() 
 
 #can we compare liver FA with HSIwet
 ggplot(data = codFA,
@@ -57,32 +41,42 @@ ggplot(data = codFA,
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
 
+
 #for poster and paper - compare liver FA with HSIwet
 ggplot(data = codFA,
        aes(x = HSIwet,
            y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
-  labs(x = "HSI wet", y = "% Liver Fatty Acids") +
-  theme_bw() +
+  theme_bw()+
+  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic Index (HSI wet)") +
+  #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 
 ggsave("./figs/HSIwet_liverFA.png", width = 6, height = 4, units = 'in') 
-a <- lm(formula = HSIwet ~ liverFA, data = codFA)
+a <- lm(formula = liverFA ~ HSIwet, data = codFA)
 summary (a)
-##this shows R^2 = 0.7314, n = 194
+##this shows R^2 = 0.7314, n = 196 for a linear model
+
+a <- loess(formula = liverFA ~ log(HSIwet), data = codFA)
+summary (a)
+#this shows for a loess: localpolynomial regression fitting
+#and I am not sure this is any better. how to get R^2 for this?
+
+
 
 ##compare muscleFA with Fulton Wet
-ggplot(data = codFA,
-       aes(x = Kwet,
-           y = muscleFA)) +
-  geom_point(size = 3, alpha = 0.8) +
-  labs(x = "Fulton's Index (K wet)", y = "% Muscle Fatty Acids") +
-  theme_bw() +
-  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+#goint to omit this because Fultonwet is to protein in literature, not to muscle FA
+#ggplot(data = codFA,
+ #      aes(x = Kwet,
+  #         y = muscleFA)) +
+#  geom_point(size = 3, alpha = 0.8) +
+#  labs(x = "Fulton's Index (K wet)", y = "% Muscle Fatty Acids") +
+#  theme_bw() +
+#  geom_smooth(method="lm", formula= (y ~ x), color=1) 
 
-ggsave("./figs/Kwet_muscleFA.png", width = 6, height = 4, units = 'in') 
-m <- lm(formula = Kwet ~ muscleFA, data = codFA)
-summary (m)
+#ggsave("./figs/Kwet_muscleFA.png", width = 6, height = 4, units = 'in') 
+#m <- lm(formula = Kwet ~ muscleFA, data = codFA)
+#summary (m)
 ##this shows R^2 = 0.02824, n = 194
 
 
@@ -115,6 +109,8 @@ Condfigure <- ggarrange(CL, CM,
 Condfigure
 ggsave("./Figs/conditionFig.png", width = 6, height = 6, units = 'in')
 #this is FIGURE Condition
+#and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
+#Kwet relates to protein and not to muscle FA
 
 
 
