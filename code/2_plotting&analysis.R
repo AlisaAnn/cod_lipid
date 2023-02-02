@@ -23,9 +23,10 @@ distinct(codcond1, year) #only age-1 fish in 2019, so 2019 doesn't appear
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = TL, y = wgt_total, color = Month)) +
-  geom_point()+
-  xlab("age-0, Cook Bay 2018 and 2020")+
-  theme_minimal()
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() +
+  xlab("age-0, Cook Bay 2018 and 2020")
+  
 plot1
 
 plot1 <- codcond1 %>%
@@ -110,12 +111,6 @@ plot1 #to show liver doesn't develop until 50 mm
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = TL, y = K_wet, color = Month)) +
-  geom_point()+
-  theme_minimal()
-plot1
-
-plot1 <- codcond1 %>%
-  ggplot(aes(x = TL, y = HSI_wet, color = Month)) +
   geom_point()+
   theme_minimal()
 plot1
@@ -776,30 +771,41 @@ ggplot(linear_mod, aes(HSIdry, HSI_wet)) +
   geom_point() +
   theme_minimal()
 
-# plot Fultondry by year and Julian day
-ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
-  geom_point() +
-  theme_minimal()+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+# plot Fulton dry by year and Julian day
+FulKdry <- ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
+  geom_point(size = 2) +
+  theme_bw()+
+  theme(legend.position = c(0.2, 0.9))+
+  scale_colour_discrete(name = "Year") +
+  labs(y = "Fulton's Condition (K dry)", x = "Day of Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
 
-
+plot(FulKdry)
 
 mod1 <- gam(Kdry ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
 
 summary(mod1)
 
+ggsave(HSIplot, filename = "output/FulKdry_Jdate.png", width = 6.5, 
+       height = 6, units = "in")
+
 plot(mod1, se = F, resid = T, pch = 19)
 
-# plot Fultonwet by year and Julian day
-ggplot(codcond1, aes(Julian_date, K_wet, color = year_fac)) +
-  geom_point() +
-  theme_minimal()+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+# plot Fulton Kwet by year and Julian day
+ggplot(codFA, aes(J_date, Kwet, color = year_fac)) +
+  geom_point(size = 2) +
+  theme_bw()+
+  theme(legend.position = c(0.9, 0.8))+
+  scale_colour_discrete(name = "Year") +
+  labs(y = "Fulton's Condition (K wet)", x = "Day of Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
 
-
-mod1 <- gam(K_wet ~ s(Julian_date, k = 4) + year_fac, data = codcond1)
+mod1 <- gam(Kwet ~ s(J_date, k = 4) + year_fac, data = codFA)
 
 summary(mod1)
+
+ggsave("./output/Kwet_Jdate.png", width = 6.5, 
+       height = 6, units = "in")
 
 plot(mod1, se = F, resid = T, pch = 19)
 
