@@ -88,7 +88,8 @@ C <- codcond1 %>%
   geom_point(size = 2, alpha = 0.8) +
   theme_bw() +
   theme(legend.position = c(0.2, 0.7))+
-  labs(x = "Total length (mm)", y = "Body Weight (g)")
+  labs(x = "Total length (mm)", y = "Body Weight (g)")+
+  geom_smooth(method="loess", formula = y ~ log(x), color=1) 
 
 plot(C)
 
@@ -113,10 +114,10 @@ summary(mod1)
 
 
 Fig4 <- ggarrange(A, B, C, D,
-                      labels = c("A", "C", "B", "D"),
+                      labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)+
   theme(legend.position = "right")
 
 Fig4
-ggsave("./figs/Figure4.png", width = 6, height = 6, units = 'in')
+ggsave("./figs/Figure4.png", width = 6, height = 6.5, units = 'in')
 
