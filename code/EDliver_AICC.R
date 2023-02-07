@@ -26,23 +26,25 @@ library(mgcv)
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year))
 
-mod1 <- gam(EDliver ~ s(J_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codFA,
+mod1 <- gam(EDliver ~ s(J_date, k = 6) +
+              s(TL, k =4) + year_fac, data = codFA,
             family = gaussian)
-plot(mod1)
+plot(mod1, pages = 1, all.terms =  TRUE)
 
 summary(mod1)
 
 gam.check(mod1)
-
-# just day
-mod1b <- gam(EDliver ~ s(J_date, k = 4) + year_fac, data = codFA,
+#showed that need to increase K, as K=4 too low
+# just day because collinearit with date and total length
+mod1b <- gam(EDliver ~ s(J_date, k = 6) + year_fac, data = codFA,
             family = gaussian)
-plot(mod1b)
+plot(mod1b, pages = 1, all.terms = TRUE)
 
 summary(mod1b)
 
 gam.check(mod1b)
+## so far model 1b is best because TL removed and K = 6 better than K=4 or K=8
+##Alisa stop here on tuesday
 
 mod2 <- gam(EDliver ~ s(TL, k = 4) + year_fac, data = codFA, family = gaussian)
 summary(mod2)
