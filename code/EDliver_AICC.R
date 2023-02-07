@@ -33,6 +33,17 @@ plot(mod1)
 
 summary(mod1)
 
+gam.check(mod1)
+
+# just day
+mod1b <- gam(EDliver ~ s(J_date, k = 4) + year_fac, data = codFA,
+            family = gaussian)
+plot(mod1b)
+
+summary(mod1b)
+
+gam.check(mod1b)
+
 mod2 <- gam(EDliver ~ s(TL, k = 4) + year_fac, data = codFA, family = gaussian)
 summary(mod2)
 plot(mod2, se = F, resid = T, pch = 19)
@@ -54,6 +65,13 @@ MuMIn::AICc(mod1, mod2, mod3, mod4)
 mod5 <- gam(EDliver ~ s(J_date, k = 4, by = year_fac) +
               s(TL, k = 4, by = year_fac), data = codFA, family = gaussian)
 summary(mod5)
+gam.check(mod5)
+plot(mod5, resid = T)
+
+# separate curves for day in each year
+mod5b <- gam(EDliver ~ s(J_date, k = 4, by = year_fac), data = codFA, family = gaussian)
+summary(mod5b)
+gam.check(mod5b)
 plot(mod5, resid = T)
 
 mod6 <- gam(EDliver ~ s(J_date, k = 4) +
