@@ -43,15 +43,15 @@ summary (a)
 
 
 #for poster and paper - compare liver FA with HSIwet
-ggplot(data = codFA,
+CL <- ggplot(data = codFA,
        aes(x = HSIwet,
            y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "% Energy stored in liver", x = "Hepatosomatic Index (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
-
+plot(CL)
 ggsave("./figs/HSIwet_liverFA.png", width = 6, height = 4, units = 'in') 
 a <- lm(formula = liverFA ~ HSIwet, data = codFA)
 summary (a)
@@ -62,13 +62,41 @@ summary (a)
 #this shows for a loess: localpolynomial regression fitting
 #and I am not sure this is any better. how to get R^2 for this?
 
+#for paper - compare actual liver FA concentration (FA density) with HSIwet
+#Feb 6, after poster input where request for actual values of lipid density
+CM <- ggplot(data = codFA,
+       aes(x = HSIwet,
+           y = liver_FA_conc)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw()+
+  labs(y = "Energy density of liver (mg FA/g)", x = "Hepatosomatic Index (HSI wet)") +
+  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+plot(CM)
+b <- lm(formula = liver_FA_conc ~ HSIwet, data = codFA)
+summary (b)
+ ##this shows R^2 = 0.5247, n = 196 for a linear model
 
+ggsave("./figs/HSIwet_liver_FA_concentration.png", width = 6, height = 4, units = 'in')
 
+#New Figure 5
+# Now do top and bottom plot of liver lipids by gross condition factors (HSIwet)
+library(ggplot2)
+library("ggpubr")
+
+Condfigure <- ggarrange(CL, CM,
+                      labels = c("A", "B"),
+                      ncol = 2, nrow = 1)
+Condfigure
+ggsave("./Figs/conditionFig5.png", width = 6, height = 6, units = 'in')
+#this is new Figure 5. Condition
+
+#and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
+#Kwet relates to protein and not to muscle FA
 ##compare muscleFA with Fulton Wet
 #goint to omit this because Fultonwet is to protein in literature, not to muscle FA
 #ggplot(data = codFA,
- #      aes(x = Kwet,
-  #         y = muscleFA)) +
+#      aes(x = Kwet,
+#         y = muscleFA)) +
 #  geom_point(size = 3, alpha = 0.8) +
 #  labs(x = "Fulton's Index (K wet)", y = "% Muscle Fatty Acids") +
 #  theme_bw() +
@@ -78,48 +106,6 @@ summary (a)
 #m <- lm(formula = Kwet ~ muscleFA, data = codFA)
 #summary (m)
 ##this shows R^2 = 0.02824, n = 194
-
-
-# Now do side by side plot of lipids by gross condition factors (wet)
-library(ggplot2)
-library("ggpubr")
-
-
-CL <- ggplot(codFA, aes(HSIwet, liverFA)) +
-  geom_point(size = 3) +
-  theme_bw()+
-  labs(y = "% Liver Fatty Acids", x = "Hepatosomatic Index (HSI wet)") +
-  theme(legend.position = c(0.2, 0.8))+
-  geom_smooth(method = "lm", formula = (y ~x), color = 1)
-plot(CL)
-
-CM <- ggplot(data = codFA,
-              aes(x = Kwet,
-                  y = muscleFA)) +
-  geom_point(size = 3, alpha = 0.8) +
-  theme_bw() +
-  labs(y = "% Muscle Fatty Acids", x = "Fulton's Condition Factor (Kwet)") +
-  geom_smooth(method = "lm", formula = (y ~x), color = 1)
-
-plot(CM)  
-
-Condfigure <- ggarrange(CL, CM,
-                      labels = c("A", "B"),
-                      ncol = 2, nrow = 1)
-Condfigure
-ggsave("./Figs/conditionFig.png", width = 6, height = 6, units = 'in')
-#this is FIGURE Condition
-#and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
-#Kwet relates to protein and not to muscle FA
-
-
-
-
-
-
-
-
-
 
 
 #for poster - compare TEMPERATURE w liver FA with HSIwet
