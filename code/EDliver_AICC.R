@@ -26,34 +26,72 @@ library(mgcv)
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year))
 
-mod1 <- gam(EDliver ~ s(J_date, k = 6) +
+mod <- gam(EDliver ~ s(J_date, k = 6) +
               s(TL, k =4) + year_fac, data = codFA,
             family = gaussian)
-plot(mod1, pages = 1, all.terms =  TRUE)
+plot(mod, pages = 1, all.terms =  TRUE)
 
-summary(mod1)
+summary(mod)
 
-gam.check(mod1)
+gam.check(mod)
+concurvity(mod,full = TRUE)
+##worst concurvity = 0.88, which says we need to inspect model
+
 #showed that need to increase K, as K=4 too low
-# just day because collinearit with date and total length
-mod1b <- gam(EDliver ~ s(J_date, k = 6) + year_fac, data = codFA,
+# try mod with just day (mod1) because collinearity between date and total length
+
+mod1a <- gam(EDliver ~ s(J_date, k = 6) + year_fac, data = codFA,
+             family = gaussian)
+plot(mod1a, pages = 1, all.terms = TRUE)
+
+summary(mod1a)
+
+gam.check(mod1a)
+concurvity(mod1a,full = TRUE)
+## so far model 1a is best because TL removed and K = 6 better than K=4 or K=8
+##going to try to increase K=7, as mod1b
+
+mod1b <- gam(EDliver ~ s(J_date, k = 7) + year_fac, data = codFA,
             family = gaussian)
 plot(mod1b, pages = 1, all.terms = TRUE)
 
 summary(mod1b)
 
 gam.check(mod1b)
-## so far model 1b is best because TL removed and K = 6 better than K=4 or K=8
-##Alisa stop here on tuesday
 
-mod2 <- gam(EDliver ~ s(TL, k = 4) + year_fac, data = codFA, family = gaussian)
+##I think histograms look good in both mod1a and mod1b
+## I realize that more diff between k and edf with k=6, so prob use mod1a.
+##and graphically the partial effect plots show overfit if K=7
+
+
+#Now with model 2 remove year and then compare with model 1a
+mod2 <- gam(EDliver ~ s(J_date, k = 6), data = codFA, family = gaussian)
 summary(mod2)
-plot(mod2, se = F, resid = T, pch = 19)
+plot(mod2, se = F, pages = 1, all.terms = TRUE, resid = T, pch = 19)
+gam.check(mod2)
 
+##mod2 is Not good. lower R^2 and the partial effect plot nearly horizontal. 
 
-mod3 <- gam(EDliver ~ s(J_date, k = 4) + year_fac, data = codFA, family = gaussian)
+AIC(mod1a, mod2)
+#AIC is lower for mod1a (no surprise) and that's the best one.
+
+mod3 <- gam(EDliver ~ s(J_date, k = 6, by = year_fac), data = codFA,
+             family = gaussian)
+plot(mod3, pages = 1, all.terms = TRUE)
+
 summary(mod3)
-plot(mod3, se = F, resid = T, pch = 19)
+
+gam.check(mod3)
+
+AIC(mod1a, mod3)
+
+#AIC shows that Model 3 best, with adj. R^2 = 39.7%
+##I want to stop here and see what Mike thinks about new model approach with leaving length out.
+
+
+
+
+
 
 install.packages('evaluate')
 install.packages('hexbin')
