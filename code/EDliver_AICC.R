@@ -1,5 +1,6 @@
 # This is second MuMlin analysis that is using the liver_FA_conc
 # which is the Fatty acid or energy concentration per gram of liver tissue
+#I am calling this variable EDliver, for energy density of the liver
 #based off Rscript 4lipid_condition.R which does same analysis but for HSIwet
 
 # Libraries
@@ -26,7 +27,7 @@ library(mgcv)
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year))
 
-mod <- gam(EDliver ~ s(J_date, k = 6) +
+mod <- gam(log(EDliver) ~ s(J_date, k = 6) +
               s(TL, k =4) + year_fac, data = codFA,
             family = gaussian)
 plot(mod, pages = 1, all.terms =  TRUE)
@@ -40,7 +41,16 @@ concurvity(mod,full = TRUE)
 #showed that need to increase K, as K=4 too low
 # try mod with just day (mod1) because collinearity between date and total length
 
-mod1a <- gam(EDliver ~ s(J_date, k = 6) + year_fac, data = codFA,
+ggplot(data= codFA, aes(EDliver))+
+  geom_histogram(fill = "grey", color = "black")
+##data too skewed. maybe log transform data.
+ggplot(data= codFA, aes(log(EDliver)))+
+  geom_histogram(fill = "grey", color = "black")
+##  log transform looks good.  Also log trans better than sqrt
+##could use a diff family that uses diff assumptions to data distribution, but best to transform data
+
+
+mod1a <- gam(log(EDliver) ~ s(J_date, k = 6) + year_fac, data = codFA,
              family = gaussian)
 plot(mod1a, pages = 1, all.terms = TRUE)
 
@@ -51,7 +61,8 @@ concurvity(mod1a,full = TRUE)
 ## so far model 1a is best because TL removed and K = 6 better than K=4 or K=8
 ##going to try to increase K=7, as mod1b
 
-mod1b <- gam(EDliver ~ s(J_date, k = 7) + year_fac, data = codFA,
+
+mod1b <- gam(log(EDliver) ~ s(J_date, k = 7) + year_fac, data = codFA,
             family = gaussian)
 plot(mod1b, pages = 1, all.terms = TRUE)
 
@@ -65,9 +76,10 @@ gam.check(mod1b)
 
 
 #Now with model 2 remove year and then compare with model 1a
-mod2 <- gam(EDliver ~ s(J_date, k = 6), data = codFA, family = gaussian)
+mod2 <- gam(log(EDliver) ~ s(J_date, k = 6), data = codFA, family = gaussian)
 summary(mod2)
 plot(mod2, se = F, pages = 1, all.terms = TRUE, resid = T, pch = 19)
+#doesn't look great - close to horizontal
 gam.check(mod2)
 
 ##mod2 is Not good. lower R^2 and the partial effect plot nearly horizontal. 
@@ -75,7 +87,7 @@ gam.check(mod2)
 AIC(mod1a, mod2)
 #AIC is lower for mod1a (no surprise) and that's the best one.
 
-mod3 <- gam(EDliver ~ s(J_date, k = 6, by = year_fac), data = codFA,
+mod3 <- gam(log(EDliver) ~ s(J_date, k = 6, by = year_fac), data = codFA,
              family = gaussian)
 plot(mod3, pages = 1, all.terms = TRUE)
 
@@ -83,10 +95,22 @@ summary(mod3)
 
 gam.check(mod3)
 
-AIC(mod1a, mod3)
+AIC(mod1a, mod2, mod3)
 
-#AIC shows that Model 3 best, with adj. R^2 = 39.7%
+#AIC shows that Model 3 best, with adj. R^2 = 0.306
 ##I want to stop here and see what Mike thinks about new model approach with leaving length out.
+
+##Mike says to run length and let AIC decide
+# separate curves for each effect in each year
+mod5 <- gam(log(EDliver) ~ s(J_date, k = 4, by = year_fac) +
+              s(TL, k = 4, by = year_fac), data = codFA, family = gaussian)
+summary(mod5)
+gam.check(mod5)
+plot(mod5, resid = T)
+##EDF and K' almost equal. check for concurvity
+concurvity(mod5,full = TRUE)
+##shows a lot of concurvity.
+##going to leave length out of model due to concurvity.
 
 
 
