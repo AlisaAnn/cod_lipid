@@ -62,15 +62,16 @@ concurvity(mod1a,full = TRUE)
 ##going to try to increase K=7, as mod1b
 
 
-mod1b <- gam(log(EDliver) ~ s(J_date, k = 7) + year_fac, data = codFA,
+mod1b <- gam(log(EDliver) ~ s(J_date, k = 4) + year_fac, data = codFA,
             family = gaussian)
 plot(mod1b, pages = 1, all.terms = TRUE)
 
 summary(mod1b)
 
 gam.check(mod1b)
-
+AIC(mod1a, mod1b)
 ##I think histograms look good in both mod1a and mod1b
+#AIC says to go with mod1a
 ## I realize that more diff between k and edf with k=6, so prob use mod1a.
 ##and graphically the partial effect plots show overfit if K=7
 
@@ -87,7 +88,7 @@ gam.check(mod2)
 AIC(mod1a, mod2)
 #AIC is lower for mod1a (no surprise) and that's the best one.
 
-mod3 <- gam(log(EDliver) ~ s(J_date, k = 6, by = year_fac), data = codFA,
+mod3 <- gam(log(EDliver) ~ s(J_date, k = 5, by = year_fac), data = codFA,
              family = gaussian)
 plot(mod3, pages = 1, all.terms = TRUE)
 
@@ -112,54 +113,98 @@ concurvity(mod5,full = TRUE)
 ##shows a lot of concurvity.
 ##going to leave length out of model due to concurvity.
 
-
-
-
-
-
-install.packages('evaluate')
-install.packages('hexbin')
-
-mod4 <- gam(EDliver ~ s(TL, k = 4, by = year_fac), data = codFA, family = gaussian)
-summary(mod4)
-
-MuMIn::AICc(mod1, mod2, mod3, mod4) 
-
-# separate curves for each effect in each year
-mod5 <- gam(EDliver ~ s(J_date, k = 4, by = year_fac) +
-              s(TL, k = 4, by = year_fac), data = codFA, family = gaussian)
-summary(mod5)
-gam.check(mod5)
-plot(mod5, resid = T)
-
-# separate curves for day in each year
-mod5b <- gam(EDliver ~ s(J_date, k = 4, by = year_fac), data = codFA, family = gaussian)
-summary(mod5b)
-gam.check(mod5b)
-plot(mod5, resid = T)
-
-mod6 <- gam(EDliver ~ s(J_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codFA, family = gaussian)
-
-plot(mod6, resid = T)
-summary(mod6)
-
-mod7 <- gam(EDliver ~ s(J_date, k = 4) +
-              s(TL, k = 4), data = codFA, family = gaussian)
-summary(mod7)
-
-# MuMIn::AICc(mod5, mod6, mod7)
-MuMIn::AICc(mod1, mod2, mod3, mod4, mod5, mod6, mod7)
-
-# save AICc output
-out <- as.data.frame(MuMIn::AICc(mod1, mod2, mod3, mod4, mod5, mod6, mod7))
-write.csv(out, "./output/EDliver.csv", row.names = F)
-
-#MIKE STOP HERE TO SEE WHICH MODEL BEST BEFORE PROCEED
-
 # model 3 is the best (separate Julian day curves by year)
 #summary(mod3)
 #plot(mod3, resid = T, pch = 19)
+
+##_________now redo the HSI_wet GAMS
+ggplot(data= codFA, aes(HSIwet))+
+  geom_histogram(fill = "grey", color = "black")
+##data too skewed. maybe log transform data.
+ggplot(data= codFA, aes(log(HSIwet)))+
+  geom_histogram(fill = "grey", color = "black")
+##  log transform looks better.  Also log trans better than sqrt
+##could use a diff family that uses diff assumptions to data distribution, but best to transform data
+
+modH1 <- gam(log(HSIwet) ~ s(J_date, k = 4) + year_fac, data = codFA,
+             family = gaussian)
+plot(modH1, pages = 1, all.terms = TRUE)
+
+summary(modH1)
+
+gam.check(modH1)
+concurvity(modH1,full = TRUE)
+## tried modelH1 with different K=6 was overfit, leave k=4
+
+
+modH1a <- gam(log(EDliver) ~ s(J_date, k = 5) + year_fac, data = codFA,
+             family = gaussian)
+plot(modH1a, pages = 1, all.terms = TRUE)
+
+summary(modH1a)
+
+gam.check(modH1a)
+
+##I think histograms look good in both modH1a and modH1
+## I realize that more diff between k and edf with k=6, so prob use mod1a.
+##and graphically the partial effect plots show overfit if K=6
+
+#Now with model 2 remove year and then compare with model H1
+modH2 <- gam(log(HSIwet) ~ s(J_date, k = 4), data = codFA, family = gaussian)
+summary(modH2)
+plot(modH2, se = F, pages = 1, all.terms = TRUE, resid = T, pch = 19)
+#doesn't look great - close to horizontal
+gam.check(modH2)
+
+##mod2 is Not good. lower R^2 and the partial effect plot nearly horizontal. 
+
+modH3 <- gam(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
+            family = gaussian)
+plot(modH3, pages = 1, all.terms = TRUE)
+
+summary(modH3)
+
+gam.check(modH3)
+#gamcheck looks good. histogram of redis and QQ plot better when k=4
+
+AIC(modH1, modH2, modH3)
+#model H3 is lowest AIC and therefore the best fit
+
+ggplot(data = codFA,
+       aes(x = TL,
+           y = HSIwet,
+           color = Month))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
+
+ggplot(data = codFA,
+       aes(x = TL,
+           y = EDliver,
+           color = Month))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
+ggplot(data = codFA,
+       aes(x = TL,
+           y = J_date,
+           color = Month))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
