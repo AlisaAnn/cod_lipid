@@ -191,11 +191,37 @@ ggplot(data = codFA,
   theme_minimal() 
 
 
+##########now redo the quasibinomial models without length
+# using liver_bi which is liver percent / 100 to yield value between 0 and 1.
+
+ggplot(codFA, aes(liver_bi)) +
+  geom_histogram(bins = 20)
+#data skewed not sure how to fix with percent data.
 
 
+ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
+  geom_point() +
+  theme_minimal()+
+  geom_smooth(method = "gam", family = "quasibinomial", formula = y ~ s(x, k = 4), se = F)
+#this plot looks same as liverFA by julian date. only now yaxis from 0 to 1
 
+mod9 <- gam(formula = liver_bi ~ s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+plot(mod9, se = F, resid = T, pch = 19)
+summary(mod9)
+gam.check(mod9)
 
+mod10 <- gam(formula = liver_bi ~ s(J_date, k = 6), family = "quasibinomial", data = codFA)
+plot(mod10, se = F, resid = T, pch = 19)
+summary(mod10)  
+gam.check(mod10) 
 
+mod11 <- gam(formula = liver_bi ~ s(J_date, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
+summary(mod11)
+plot(mod11)
+gam.check(mod11)
+
+AIC(mod9,mod10, mod11)
+###is there a way to evaluate quasibinomial models?
 
 
 
