@@ -249,72 +249,8 @@ gam.check(mod11)
 predict(mod11, type = "response", se.fit = TRUE)
 
 
+##Now need to make Figure for paper
 
-
-
-
-
-
-
-# and plot with random terms included to get better CI estimates
-mod3a <- gamm4(HSI_wet ~ s(Julian_date, k = 4, by = year_fac),
-               random=~(1|site_fac/day_fac),
-               data = codcond1)
-summary(mod3a$gam)
-
-# get the data to plot
-plot_dat <- plot(mod3a$gam)
-
-# restructure into a data frame to plot in ggplot
-plot_this <- data.frame(year = as.factor(rep(c(2018, 2020), each = 100)),
-                        facet = "Day of year", 
-                        HSI_wet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit),
-                        se = c(plot_dat[[1]]$se, plot_dat[[2]]$se),
-                        x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x))
-
-my.col = cb[c(2,6)]
-
-ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
-  geom_line() +
-  geom_ribbon(aes(ymin = HSI_wet - 1.96*se,
-                  ymax = HSI_wet + 1.96*se), 
-              alpha = 0.2,
-              lty = 0) +
-  theme(axis.title.x = element_blank(),
-        legend.position = c(0.6, 0.8),
-        legend.title = element_blank()) +
-  ylab("HSI wet") +
-  scale_color_manual(values = my.col) +
-  scale_fill_manual(values = my.col)
-
-# separate curves for each effect in each year
-mod5 <- gam(HSI_wet ~ s(Julian_date, k = 4, by = year_fac) +
-              s(TL, k = 4, by = year_fac), data = codcond1)
-summary(mod5)
-
-
-MuMIn::AICc(mod3, mod5)
-summary(mod5)
-plot(mod5, resid = T)
-
-mod6 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
-              s(TL, k = 4) + year_fac, data = codcond1)
-
-
-# MuMIn::AICc(mod5, mod6)
-
-mod7 <- gam(HSI_wet ~ s(Julian_date, k = 4) +
-              s(TL, k = 4), data = codcond1)
-
-# MuMIn::AICc(mod5, mod6, mod7)
-MuMIn::AICc(mod5, mod7)
-
-# save AICc output
-out <- as.data.frame(MuMIn::AICc(mod1, mod2, mod3, mod4, mod5, mod6, mod7))
-
-write.csv(out, "./output/HSI_wet_AICc2.csv", row.names = F)
-
-# model 5 remains the best model
 # refit with gamm4 to account for non-independence within nested site/set
 # and plot
 mod5a <- gamm4(HSI_wet ~ s(Julian_date, k = 4, by = year_fac) +
@@ -352,6 +288,6 @@ ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
 
 anova(mod5a$gam)
 
-ggsave("./Figs/HSIwet_vs_day_length.png", width = 6, height = 3, units = 'in')
+ggsave("./Figs/HSIwet_vs_day.png", width = 6, height = 3, units = 'in')
 
 
