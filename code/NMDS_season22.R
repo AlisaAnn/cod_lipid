@@ -508,5 +508,12 @@ NMDSfigure <- ggarrange(P11, P22, P31, P12, P23, P32, P13, P24, P33, P14, P25, P
                         ncol = 3, nrow = 4)
 NMDSfigure
 ggsave("./Figs/NMDS123_all_Factors.png", width = 6, height = 6, units = 'in')
-#this is FIGURE NMDS with 3 axes, all sig species
+#this is FIGURE NMDS with 3 axes, nearly sig species
 
+
+NMDSfigure <- ggarrange(P11, P23, P31, P12, P24, P32, P14, P25, P33, 
+                        labels = c("1A", "2A", "3A", "1B", "2B", "3B", "1C", "2C","3C"),
+                        ncol = 3, nrow = 3)
+NMDSfigure
+ggsave("./Figs/NMDS123_sig_Factors.png", width = 6, height = 6, units = 'in')
+#this is FIGURE NMDS with 3 axes, all sig species
