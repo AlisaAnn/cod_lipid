@@ -198,6 +198,21 @@ ggplot(codFA, aes(liver_bi)) +
   geom_histogram(bins = 20)
 #data skewed not sure how to fix with percent data.
 
+ggplot(codFA, aes(sqrt(liver_bi+10))) +
+  geom_histogram(bins = 20)
+ggplot(codFA, aes(log(liver_bi+1))) +
+  geom_histogram(bins = 20)
+#log() is natural log and not base 10
+ggplot(codFA, aes(log1p(liver_bi+1))) +
+  geom_histogram(bins = 20)
+ggplot(codFA, aes((liver_bi+1)^(1/3))) +
+  geom_histogram(bins = 20)
+ggplot(codFA, aes(log10(liver_bi+1))) +
+  geom_histogram(bins = 20)
+#I think log10() and log() are same and best chance
+ggplot(codFA, aes(exp(liver_bi+1))) +
+  geom_histogram(bins = 20)
+
 
 ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_point() +
@@ -205,26 +220,33 @@ ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_smooth(method = "gam", family = "quasibinomial", formula = y ~ s(x, k = 4), se = F)
 #this plot looks same as liverFA by julian date. only now yaxis from 0 to 1
 
-mod9 <- gam(formula = liver_bi ~ s(J_date, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+mod9 <- gam(formula = log(liver_bi + 1) ~ s(J_date, k = 7) + year_fac, family = "quasibinomial", data = codFA)
 plot(mod9, se = F, resid = T, pch = 19)
 summary(mod9)
 gam.check(mod9)
 
-mod10 <- gam(formula = liver_bi ~ s(J_date, k = 6), family = "quasibinomial", data = codFA)
+mod10 <- gam(formula = log(liver_bi +1) ~ s(J_date, k = 6), family = "quasibinomial", data = codFA)
 plot(mod10, se = F, resid = T, pch = 19)
 summary(mod10)  
 gam.check(mod10) 
 
-mod11 <- gam(formula = liver_bi ~ s(J_date, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
+mod11 <- gam(formula = log(liver_bi +1) ~ s(J_date, k = 3, by = year_fac), family = "quasibinomial", data = codFA)
 summary(mod11)
 plot(mod11)
 gam.check(mod11)
 
 AIC(mod9,mod10, mod11)
 ###is there a way to evaluate quasibinomial models?
+#can see that mod10 very poor with assumptions in gam.check
 
+plot(mod9, pages = 1, all.terms = TRUE)
+gam.check(mod9)
 
+plot(mod11, pages = 1, all.terms = TRUE)
+gam.check(mod11)
+##based on normality of residuals, I think mod11 is the best
 
+predict(mod11, type = "response", se.fit = TRUE)
 
 
 
