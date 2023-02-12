@@ -69,7 +69,7 @@ CM <- ggplot(data = codFA,
            y = liver_FA_conc)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "Energy density of liver (mg FA/g)", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "Liver energy density (mg FA/g)", x = "Hepatosomatic Index (HSI wet)") +
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 plot(CM)
 b <- lm(formula = liver_FA_conc ~ HSIwet, data = codFA)
@@ -85,9 +85,9 @@ library("ggpubr")
 
 Condfigure <- ggarrange(CL, CM,
                       labels = c("A", "B"),
-                      ncol = 2, nrow = 1)
+                      ncol = 1, nrow = 2)
 Condfigure
-ggsave("./Figs/conditionFig5.png", width = 6, height = 6, units = 'in')
+ggsave("./Figs/conditionFig5.png", width = 4, height = 6, units = 'in')
 #this is new Figure 5. Condition
 
 #and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
