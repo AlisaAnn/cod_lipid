@@ -242,10 +242,10 @@ library("ggpubr")
 # and plot the best models from AIC which is modH3 for HSI and mod3 for ED liver
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year),
-         site_fac = as.factor("site #"),
+         site_fac = as.factor(`site #`),
          day_fac = as.factor(J_date))
 
-modH3fig <- gamm4(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
+modH3fig <- gamm4::gamm4(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
            random=~(1|site_fac/day_fac))
 ##Need mike's help.
 #error: grouping factors must have > 1 sampled level
