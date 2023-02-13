@@ -100,22 +100,8 @@ AIC(mod1a, mod2, mod3)
 
 #AIC shows that Model 3 best, with adj. R^2 = 0.306
 ##I want to stop here and see what Mike thinks about new model approach with leaving length out.
-
-##Mike says to run length and let AIC decide
-# separate curves for each effect in each year
-mod5 <- gam(log(EDliver) ~ s(J_date, k = 4, by = year_fac) +
-              s(TL, k = 4, by = year_fac), data = codFA, family = gaussian)
-summary(mod5)
-gam.check(mod5)
-plot(mod5, resid = T)
-##EDF and K' almost equal. check for concurvity
-concurvity(mod5,full = TRUE)
-##shows a lot of concurvity.
-##going to leave length out of model due to concurvity.
-
 # model 3 is the best (separate Julian day curves by year)
-#summary(mod3)
-#plot(mod3, resid = T, pch = 19)
+
 
 ##_________now redo the HSI_wet GAMS
 ggplot(data= codFA, aes(HSIwet))+
@@ -213,7 +199,6 @@ ggplot(codFA, aes(log10(liver_bi+1))) +
 ggplot(codFA, aes(exp(liver_bi+1))) +
   geom_histogram(bins = 20)
 
-
 ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_point() +
   theme_minimal()+
@@ -248,25 +233,32 @@ gam.check(mod11)
 
 predict(mod11, type = "response", se.fit = TRUE)
 
-
 ##Now need to make Figure for paper
+# plot liver FA and muscle FA by year and Julian day
+library(ggplot2)
+library("ggpubr")
 
 # refit with gamm4 to account for non-independence within nested site/set
-# and plot
-mod5a <- gamm4(HSI_wet ~ s(Julian_date, k = 4, by = year_fac) +
-                 s(TL, k = 4, by = year_fac),
-               random=~(1|site_fac/day_fac),
-               data = codcond1)
+# and plot the best models from AIC which is modH3 for HSI and mod3 for ED liver
+codFA <- codFA %>%
+  mutate(year_fac = as.factor(Year),
+         site_fac = as.factor("site #"),
+         day_fac = as.factor(J_date))
 
-summary(mod5a$gam)
+modH3fig <- gamm4(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
+           random=~(1|site_fac/day_fac))
+##Need mike's help.
+#error: grouping factors must have > 1 sampled level
+
+summary(modH3fig$gam)
 
 # get the data to plot
-plot_dat <- plot(mod5a$gam)
+plot_dat <- plot(modH3fig$gam)
 
 # restructure into a data frame to plot in ggplot
 plot_this <- data.frame(year = as.factor(rep(c(2018, 2020, 2018, 2020), each = 100)),
                         facet = rep(c("Day of year", "Total length (mm)"), each = 200), 
-                        HSI_wet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
+                        HSIwet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
                         se = c(plot_dat[[1]]$se, plot_dat[[2]]$se, plot_dat[[3]]$se, plot_dat[[4]]$se),
                         x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x, plot_dat[[3]]$x, plot_dat[[4]]$x))
 
@@ -286,8 +278,35 @@ ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)
 
-anova(mod5a$gam)
+anova(modH3fig$gam)
 
-ggsave("./Figs/HSIwet_vs_day.png", width = 6, height = 3, units = 'in')
+ggsave("./Figs/HSIwet_vs_day_new.png", width = 6, height = 3, units = 'in')
+
+
+M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Fatty Acids in Muscle", x = "Day of Year") +
+  theme(legend.position = c(0.2, 0.2))+
+  scale_colour_discrete(name = "Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+plot(M)
+
+L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
+  geom_point(size = 3) +
+  theme_bw()+
+  labs(y = "% Fatty Acids in Liver", x = "Day of Year") +
+  theme(legend.position = c(0.2, 0.8))+
+  scale_colour_discrete(name = "Year") +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+plot(L)
+
+FAfigure <- ggarrange(L, M,
+                      labels = c("A", "B"),
+                      ncol = 2, nrow = 2)
+FAfigure
+ggsave("./Figs/liver_Fig6.png", width = 6, height = 4, units = 'in')
+#this is for paper Fig 6
 
 
