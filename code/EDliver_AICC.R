@@ -9,6 +9,8 @@ library(patchwork)
 # Load the previous script
 source("code/1_data_import.R")
 
+theme_set(theme_bw())
+cb <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 #### PLOTTING ####
 head(codgrosslipid)
@@ -243,38 +245,45 @@ library("ggpubr")
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year),
          site_fac = as.factor(`site #`),
-         day_fac = as.factor(J_date))
+         day_fac = as.factor(J_date),
+         log.HSI.wet = log(HSIwet))
 
-modH3fig <- gamm4::gamm4(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
+
+
+
+modH3fig <- gamm4::gamm4(log.HSI.wet ~ s(J_date, k = 4, by = year_fac), data = codFA,
            random=~(1|site_fac/day_fac))
-##Need mike's help. error: grouping factors must have > 1 sampled level
-## Thanks Mike!
+
 
 summary(modH3fig$gam)
 
-# get the data to plot
-plot_dat <- plot(modH3fig$gam)
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_dat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                      J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                 seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
 
-# restructure into a data frame to plot in ggplot
-plot_this <- data.frame(year = as.factor(rep(c(2018, 2020, 2018, 2020), each = 100)),
-                        facet = rep(c("Day of year"), each = 200), 
-                        HSIwet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
-                        se = c(plot_dat[[1]]$se, plot_dat[[2]]$se, plot_dat[[3]]$se, plot_dat[[4]]$se),
-                        x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x, plot_dat[[3]]$x, plot_dat[[4]]$x))
+# now predict HSIwet for these covariates
+plot_dat <- predict(modH3fig$gam, newdata = new_dat, type = "response", se.fit = T)
+
+new_dat <- new_dat %>%
+  mutate(log_HSIwet = plot_dat$fit,
+         LCI = log_HSIwet-1.096*plot_dat$se.fit,
+         UCI = log_HSIwet+1.096*plot_dat$se.fit)
 
 my.col = cb[c(2,6)]
 
-ggplot(plot_this, aes(x_value, HSI_wet, color = year, fill = year)) +
+ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fac)) +
   geom_line() +
-  geom_ribbon(aes(ymin = HSI_wet - 1.96*se,
-                  ymax = HSI_wet + 1.96*se), 
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
               alpha = 0.2,
               lty = 0) +
-  facet_wrap(~facet, scales = "free_x") +
+  # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
         legend.position = c(0.6, 0.8),
         legend.title = element_blank()) +
-  ylab("HSI wet") +
+  ylab("log(HSI wet)") +
+  xlab("Day of year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)
 
