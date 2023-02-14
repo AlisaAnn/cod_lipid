@@ -123,7 +123,7 @@ concurvity(modH1,full = TRUE)
 ## tried modelH1 with different K=6 was overfit, leave k=4
 
 
-modH1a <- gam(log(EDliver) ~ s(J_date, k = 5) + year_fac, data = codFA,
+modH1a <- gam(log(HSIwet) ~ s(J_date, k = 5) + year_fac, data = codFA,
              family = gaussian)
 plot(modH1a, pages = 1, all.terms = TRUE)
 
@@ -247,8 +247,8 @@ codFA <- codFA %>%
 
 modH3fig <- gamm4::gamm4(log(HSIwet) ~ s(J_date, k = 4, by = year_fac), data = codFA,
            random=~(1|site_fac/day_fac))
-##Need mike's help.
-#error: grouping factors must have > 1 sampled level
+##Need mike's help. error: grouping factors must have > 1 sampled level
+## Thanks Mike!
 
 summary(modH3fig$gam)
 
@@ -257,7 +257,7 @@ plot_dat <- plot(modH3fig$gam)
 
 # restructure into a data frame to plot in ggplot
 plot_this <- data.frame(year = as.factor(rep(c(2018, 2020, 2018, 2020), each = 100)),
-                        facet = rep(c("Day of year", "Total length (mm)"), each = 200), 
+                        facet = rep(c("Day of year"), each = 200), 
                         HSIwet = c(plot_dat[[1]]$fit, plot_dat[[2]]$fit, plot_dat[[3]]$fit, plot_dat[[4]]$fit),
                         se = c(plot_dat[[1]]$se, plot_dat[[2]]$se, plot_dat[[3]]$se, plot_dat[[4]]$se),
                         x_value = c(plot_dat[[1]]$x, plot_dat[[2]]$x, plot_dat[[3]]$x, plot_dat[[4]]$x))
