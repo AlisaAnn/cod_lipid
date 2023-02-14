@@ -278,7 +278,7 @@ HSI3 <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fa
               lty = 0) +
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.6, 0.8),
+        legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
   ylab("log(HSI wet)") +
   xlab("Day of year") +
@@ -319,7 +319,7 @@ ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac))
               lty = 0) +
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.6, 0.8),
+        legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
   ylab("log(Energy density in liver)") +
   xlab("Day of year") +
@@ -333,7 +333,7 @@ M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Fatty Acids in Muscle", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.2))+
+  theme(legend.position = c(0.3, 0.25))+
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
@@ -343,7 +343,7 @@ L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Fatty Acids in Liver", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.8))+
+  theme(legend.position = c(0.2, 0.75))+
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
@@ -352,7 +352,7 @@ FAfigure <- ggarrange(HSI3, ED1, L, M,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
 FAfigure
-ggsave("./Figs/liver_Fig6.png", width = 6, height = 4, units = 'in')
+ggsave("./Figs/liver_Fig6.png", width = 7, height = 5, units = 'in')
 #this is for paper Fig 6
 
 
