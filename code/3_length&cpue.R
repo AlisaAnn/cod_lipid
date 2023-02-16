@@ -207,6 +207,38 @@ mod1 <- gamm4::gamm4(log_cpue ~ s(Julian_date, by = year_fac, k = 4), data = cod
 
 summary(mod1$gam) # predict from this model object
 
+# set up a plot - predict from mod1$gam over the range of days observed in each year
+new_dat <- data.frame(year_fac = as.factor(rep(c(2018, 2019, 2020), each = 100)),
+                      Julian_date = c(seq(min(codcpue$Julian_date[codcpue$year==2018]), max(codcpue$Julian_date[codcpue$year==2018]), length.out = 100),
+                                 seq(min(codcpue$Julian_date[codcpue$year==2019]), max(codcpue$Julian_date[codcpue$year==2019]), length.out = 100),
+                                 seq(min(codcpue$Julian_date[codcpue$year==2020]), max(codcpue$Julian_date[codcpue$year==2020]), length.out = 100)))
+
+# now predict HSIwet for these covariates
+plot_dat <- predict(mod1$gam, newdata = new_dat, type = "response", se.fit = T)
+
+new_dat <- new_dat %>%
+  mutate(log_cpue = plot_dat$fit,
+         LCI = log_cpue-1.096*plot_dat$se.fit,
+         UCI = log_cpue+1.096*plot_dat$se.fit)
+
+my.col = cb[c(2,3,6)]
+
+CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.2,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log(CPUE)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)
+plot(CPUE)
+anova(modH3fig$gam)
 
 plot(mod1, se = F, resid = T, pch = 19)
 ## NB: this model does not include autocorrelated residuals
