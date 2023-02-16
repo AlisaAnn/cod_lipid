@@ -99,13 +99,12 @@ summary(mod3)
 gam.check(mod3)
 
 AIC(mod1a, mod2, mod3)
+summary(mod1a)
 
-#AIC shows that Model 3 best, with adj. R^2 = 0.306
+#AIC shows that Model 1a best, with adj. R^2 = 0.262
 ##I want to stop here and see what Mike thinks about new model approach with leaving length out.
-# model 3 is the best (separate Julian day curves by year)
 
-
-##_________now redo the HSI_wet GAMS
+###_________now redo the HSI_wet GAMS
 ggplot(data= codFA, aes(HSIwet))+
   geom_histogram(fill = "grey", color = "black")
 ##data too skewed. maybe log transform data.
@@ -207,7 +206,7 @@ ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_smooth(method = "gam", family = "quasibinomial", formula = y ~ s(x, k = 4), se = F)
 #this plot looks same as liverFA by julian date. only now yaxis from 0 to 1
 
-mod9 <- gam(formula = log(liver_bi + 1) ~ s(J_date, k = 7) + year_fac, family = "quasibinomial", data = codFA)
+mod9 <- gam(formula = log(liver_bi + 1) ~ s(J_date, k = 4) + year_fac, family = "quasibinomial", data = codFA)
 plot(mod9, se = F, resid = T, pch = 19)
 summary(mod9)
 gam.check(mod9)
@@ -231,7 +230,7 @@ gam.check(mod9)
 
 plot(mod11, pages = 1, all.terms = TRUE)
 gam.check(mod11)
-##based on normality of residuals, I think mod11 is the best
+##based on simplicity of model, going to say mod 9 the best
 
 predict(mod11, type = "response", se.fit = TRUE)
 
@@ -241,14 +240,12 @@ library(ggplot2)
 library("ggpubr")
 
 # refit with gamm4 to account for non-independence within nested site/set
-# and plot the best models from AIC which is modH3 for HSI and mod3 for ED liver
+# and plot the best models from AIC which is modH3 for HSI
 codFA <- codFA %>%
   mutate(year_fac = as.factor(Year),
          site_fac = as.factor(`site #`),
          day_fac = as.factor(J_date),
          log.HSI.wet = log(HSIwet))
-
-
 
 
 modH3fig <- gamm4::gamm4(log.HSI.wet ~ s(J_date, k = 4, by = year_fac), data = codFA,
@@ -272,7 +269,7 @@ new_dat <- new_dat %>%
 
 my.col = cb[c(2,6)]
 
-ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fac)) +
+HSI3 <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fac)) +
   geom_line() +
   geom_ribbon(aes(ymin = LCI,
                   ymax = UCI), 
@@ -280,42 +277,160 @@ ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fac)) +
               lty = 0) +
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.6, 0.8),
+        legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
   ylab("log(HSI wet)") +
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)
-
+plot(HSI3)
 anova(modH3fig$gam)
 
 ggsave("./Figs/HSIwet_vs_day_new.png", width = 6, height = 3, units = 'in')
 
+##now plot best model (mod1a) for EDliver
+modED1fig <- gamm4::gamm4((log(EDliver) ~ s(J_date, k = 6) + year_fac), data = codFA,
+                         random=~(1|site_fac/day_fac))
 
+
+summary(modED1fig$gam)
+
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_EDdat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                      J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                 seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
+
+# now predict HSIwet for these covariates
+plot_EDdat <- predict(modED1fig$gam, newdata = new_EDdat, type = "response", se.fit = T)
+
+new_EDdat <- new_dat %>%
+  mutate(log_ED = plot_EDdat$fit,
+         LCI = log_ED-1.096*plot_dat$se.fit,
+         UCI = log_ED+1.096*plot_dat$se.fit)
+
+my.EDcol = cb[c(2,6)]
+
+ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.2,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log(Energy density in liver)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.EDcol) +
+  scale_fill_manual(values = my.EDcol)
+plot(ED1)
+anova(modED1fig$gam)
+
+################
+##now plot best model (mod9) for percent liver
+modLfig <- gamm4::gamm4((log(liver_bi + 1) ~ s(J_date, k = 4) + year_fac), data = codFA,
+                          random=~(1|site_fac/day_fac))
+
+
+summary(modLfig$gam)
+
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_Ldat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                        J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                   seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
+
+# now predict liver percent for these covariates
+plot_Ldat <- predict(modLfig$gam, newdata = new_Ldat, type = "response", se.fit = T)
+
+new_Ldat <- new_dat %>%
+  mutate(log_L = plot_Ldat$fit,
+         LCI = log_L-1.096*plot_Ldat$se.fit,
+         UCI = log_L+1.096*plot_Ldat$se.fit)
+
+my.Lcol = cb[c(2,6)]
+
+Lnew <- ggplot(new_Ldat, aes(J_date, log_L, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.2,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log(Proportion FA in Liver)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.Lcol) +
+  scale_fill_manual(values = my.Lcol)
+plot(Lnew)
+anova(modLfig$gam)
+
+###############
+##now plot best model (mod9) for percent muscle
+modMfig <- gamm4::gamm4((log(muscle_bi + 1) ~ s(J_date, k = 4) + year_fac), data = codFA,
+                        random=~(1|site_fac/day_fac))
+
+
+summary(modMfig$gam)
+
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_Mdat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                       J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                  seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
+
+# now predict liver percent for these covariates
+plot_Mdat <- predict(modMfig$gam, newdata = new_Mdat, type = "response", se.fit = T)
+
+new_Mdat <- new_Mdat %>%
+  mutate(log_M = plot_Mdat$fit,
+         LCI = log_M-1.096*plot_Mdat$se.fit,
+         UCI = log_M+1.096*plot_Mdat$se.fit)
+
+my.Mcol = cb[c(2,6)]
+
+Mnew <- ggplot(new_Mdat, aes(J_date, log_M, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.2,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.2),
+        legend.title = element_blank()) +
+  ylab("log(Proportion FA in Muscle)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.Mcol) +
+  scale_fill_manual(values = my.Mcol)
+plot(Mnew)
+anova(modMfig$gam)
+###
 M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Fatty Acids in Muscle", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.2))+
+  theme(legend.position = c(0.3, 0.25))+
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 plot(M)
-
+##plots M and L have actual data points rather than smoothed gam
 L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   geom_point(size = 3) +
   theme_bw()+
   labs(y = "% Fatty Acids in Liver", x = "Day of Year") +
-  theme(legend.position = c(0.2, 0.8))+
+  theme(legend.position = c(0.2, 0.75))+
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
 
-FAfigure <- ggarrange(L, M,
-                      labels = c("A", "B"),
+FAfigure <- ggarrange(HSI3, ED1, Lnew, Mnew,
+                      labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
 FAfigure
-ggsave("./Figs/liver_Fig6.png", width = 6, height = 4, units = 'in')
+ggsave("./Figs/liver_Fig6new.png", width = 7, height = 5, units = 'in')
 #this is for paper Fig 6
 
 
