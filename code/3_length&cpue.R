@@ -161,9 +161,7 @@ library(mgcv)
 codcpue <- codcpue %>%
   mutate(log_cpue = log(Cod+1),
          year_fac = as.factor(year))
-scale_colour_discrete(name = "Year") +
-  labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
 
 ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
 
@@ -172,12 +170,42 @@ ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
   theme_bw()+
   theme(legend.position = c(0.2, 0.5)) +
+  scale_colour_discrete(name = "Year") +
+  labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
   
-## NB: change to colorblind palette, clean up
+codcpue <- codcpue %>%
+  dplyr::mutate(year_day = paste(year, Julian_date, sep = "_")) 
 
-mod1 <- gam(log_cpue ~ s(Julian_date, k = 4) + year_fac, data = codcpue)
+sample_order <- codcpue %>% 
+  group_by(year, Julian_date) %>%
+  summarise(sample_number = n()) %>%
+  select(-sample_number)
 
-summary(mod1)
+sample1 <- sample_order %>%
+  filter(year == 2018)
+  sample1$sample_order = 1:nrow(sample1)
+  
+sample2 <- sample_order %>%
+  filter(year == 2019)
+  sample2$sample_order = 1:nrow(sample2)
+
+sample3 <- sample_order %>%
+    filter(year == 2020)
+  sample3$sample_order = 1:nrow(sample3)
+  
+sample_order <- rbind(sample1, sample2, sample3)
+
+codcpue <- left_join(codcpue, sample_order)
+
+# now we have sample order for each event in each year
+
+# try to use this order in corAR1() structure
+
+mod1 <- gamm4::gamm4(log_cpue ~ s(Julian_date, by = year_fac, k = 4), data = codcpue, 
+                     random=~(1|year_fac/sample_order))
+
+summary(mod1$gam) # predict from this model object
 
 
 plot(mod1, se = F, resid = T, pch = 19)
