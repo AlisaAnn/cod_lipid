@@ -237,10 +237,11 @@ CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)
-plot(CPUE)
-anova(modH3fig$gam)
 
-plot(mod1, se = F, resid = T, pch = 19)
+plot(CPUE)
+
+anova(mod1fig$gam)
+
 ## NB: this model does not include autocorrelated residuals
 ## add these with GAMM, etc.
 
