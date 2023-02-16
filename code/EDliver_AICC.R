@@ -230,7 +230,7 @@ gam.check(mod9)
 
 plot(mod11, pages = 1, all.terms = TRUE)
 gam.check(mod11)
-##based on normality of residuals, I think mod11 is the best
+##based on simplicity of model, going to say mod 9 the best
 
 predict(mod11, type = "response", se.fit = TRUE)
 
