@@ -58,7 +58,7 @@ AppK <- codcond1 %>%
   ggplot(aes(x = K_wet, y = Kdry, color = Month)) +
   geom_point()+
   theme_bw()+
-  labs(y = "Fulton's Condition dry (K dry)", x = "Fulton's Condition wet (K wet)") +
+  labs(y = "Fulton's K dry", x = "Fulton's K wet") +
   theme(legend.position = "bottom", legend.direction  = "horizontal")
 plot(AppK)
 
@@ -66,7 +66,7 @@ AppH <- codcond1 %>%
   ggplot(aes(x = HSIwet, y = HSIdry, color = Month)) +
   geom_point()+
   theme_bw()+
-  labs(y = "Hepatosomatic Index dry (HSI dry)", x = "Hepatosomatic Index wet (HSI wet)") +
+  labs(y = "HSI dry", x = "HSI wet") +
   theme(legend.position = "none")+
   geom_smooth(method = "lm", formula = (y ~x), color = 1)
 plot(AppH)
@@ -854,8 +854,8 @@ ggplot(data = codcond1,
 
 
 #repeat anova for both years w stomach weight
-lm_model1820gut <- lm(stom_percent_wgt ~ Month, data = codcond1)
-lm_model1820gut
+gam_model1820gut <- gam(stom_percent_wgt ~ Month, data = codcond1)
+gam_model1820gut
 
-summary(lm_model1820gut)
+summary(gam_model1820gut)
 
