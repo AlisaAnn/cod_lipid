@@ -5,8 +5,6 @@ library(patchwork)
 ## mike I need help here: is MuMIN package nested in another library?
 
 getOption("defaultPackages")
-install.packages("evaluate")
-install.packages("MuMIn")
 library (MuMIn) #this doesn't work because MuMIN wasn't updated. WOrks on Mike's 4.1 version of Rscript
 
 library(tidyverse)
