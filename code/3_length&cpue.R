@@ -12,6 +12,8 @@ library(tidyverse)
 # Load the previous script
 source("code/1_data_import.R")
 
+theme_set(theme_bw())
+cb <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 
 #### PLOTTING ####
 head(codlen)
@@ -161,8 +163,6 @@ codcpue <- codcpue %>%
          year_fac = as.factor(year))
 
 
-ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
-
 # plot cpue by year and Julian day
 ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   geom_point() +
@@ -171,6 +171,9 @@ ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   scale_colour_discrete(name = "Year") +
   labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
+
+
+ggsave("./figs/logcpue_by_date.png", width = 6, height = 4, units = 'in')
   
 codcpue <- codcpue %>%
   dplyr::mutate(year_day = paste(year, Julian_date, sep = "_")) 
@@ -200,7 +203,7 @@ codcpue <- left_join(codcpue, sample_order)
 
 # try to use this order in corAR1() structure
 
-mod1 <- gamm4::gamm4(log_cpue ~ s(Julian_date, by = year_fac, k = 4), data = codcpue, 
+mod1 <- gamm4::gamm4(log_cpue ~ s(Julian_date, by = year_fac, k = 5) + year_fac, data = codcpue, 
                      random=~(1|year_fac/sample_order))
 
 summary(mod1$gam) # predict from this model object
@@ -211,7 +214,8 @@ new_dat <- data.frame(year_fac = as.factor(rep(c(2018, 2019, 2020), each = 100))
                                  seq(min(codcpue$Julian_date[codcpue$year==2019]), max(codcpue$Julian_date[codcpue$year==2019]), length.out = 100),
                                  seq(min(codcpue$Julian_date[codcpue$year==2020]), max(codcpue$Julian_date[codcpue$year==2020]), length.out = 100)))
 
-# now predict HSIwet for these covariates
+
+# now predict CPUE for new_dat and plot
 plot_dat <- predict(mod1$gam, newdata = new_dat, type = "response", se.fit = T)
 
 new_dat <- new_dat %>%
@@ -219,7 +223,7 @@ new_dat <- new_dat %>%
          LCI = log_cpue-1.096*plot_dat$se.fit,
          UCI = log_cpue+1.096*plot_dat$se.fit)
 
-my.col = cb[c(2,3,6)]
+my.col = cb[c(2,4,6)]
 
 CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year_fac)) +
   geom_line() +
@@ -227,21 +231,21 @@ CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year
                   ymax = UCI), 
               alpha = 0.2,
               lty = 0) +
-  # facet_wrap(~facet, scales = "free_x") +
-  theme(axis.title.x = element_blank(),
-        legend.position = c(0.2, 0.8),
+  theme(legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
-  ylab("log(CPUE)") +
+  ylab("ln(CPUE)") +
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
-  scale_fill_manual(values = my.col)
+  scale_fill_manual(values = my.col) +
+  geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) 
 
 plot(CPUE)
 
+ggsave("./figs/CPUE_by_year.png", width = 6, height = 4, units = "in")
+
 anova(mod1fig$gam)
 
-## NB: this model does not include autocorrelated residuals
-## add these with GAMM, etc.
+.
 
 
 ## ---------------------------------------
