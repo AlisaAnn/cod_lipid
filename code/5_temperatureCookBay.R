@@ -36,7 +36,7 @@ str(cooktemp)
 ggplot(cooktemp, aes(J_date, Avg_Temp, color = year_fac)) +
   geom_point(alpha = 0.2) +
   theme_bw() +
-  labs(x = "Day of Year", y = "Avg Water Temp (C)") +
+  labs(x = "Day of Year", y = "Average Water Temp (˚C)") +
   theme(legend.position = c(0.2,0.7)) +
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F)
