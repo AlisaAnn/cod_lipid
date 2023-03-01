@@ -28,10 +28,10 @@ tail(prey_wgt) #to make sure no empty rows at bottom of file
 
 #### Create Environmental and Species Matrices ####
 ##removed mysids (only at 3 stations in 2020) and euphasids (only december 2022)
-prey_wgts <- prey_wgt[,c(36:46)]
+prey_wgts <- prey_wgt[,c(37:47)]
 head(prey_wgts)
 
-preyEnvData <- prey_wgt[,c(1:20)]
+preyEnvData <- prey_wgt[,c(1:21)]
 head(preyEnvData)
 
 
@@ -234,14 +234,14 @@ plot3
 head(preyEnvData)
 
 #isolate factors
-preyEnvDataFact <- preyEnvData[,c(4, 5, 6)]
+preyEnvDataFact <- preyEnvData[,c(4, 5, 6, 7)]
 head(preyEnvDataFact)
 en <- envfit(prey_wgtMDS, preyEnvDataFact, permutations = 999, na.rm = T)
 head(en)
 
 #Only continuous environmental variables
 head(preyEnvData)
-preyEnvDataCont <- preyEnvData[,c(7, 8, 9, 10)]
+preyEnvDataCont <- preyEnvData[,c(8, 9, 10, 11)]
 head(preyEnvDataCont)
 names(preyEnvDataCont)[1]<-paste("Day of Year")
 names(preyEnvDataCont)[2]<-paste("Temp")
@@ -284,8 +284,8 @@ safe_colorblind_palette <- c("#88CCEE", "#CC6677", "#DDCC77", "#117733", "#33228
                              "#44AA99", "#999933", "#882255", "#661100", "#6699CC", "#888888")
 
 Cod_Env <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
-  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=Season), show.legend=F, position=position_jitter(.1))+
-  stat_ellipse(aes(fill=Season, color = Season), alpha=.25,type='t',size =1, geom="polygon")+ 
+  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=SeasonA), show.legend=F, position=position_jitter(.1))+
+  stat_ellipse(aes(fill=SeasonA, color = SeasonA), alpha=.25,type='t',size =1, geom="polygon")+ 
   theme_classic()+
   scale_linetype_manual(values = "solid") +
   scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
@@ -314,7 +314,7 @@ en_prey3 <- envfit(NMDS3, prey_wgts, permutations = 999, na.rm = T)
 head(en_prey3)
 #first make the plot of env var and species
 head(prey_wgts)
-preywgt_cut <- prey_wgts[,c(1, 2, 3, 6, 10)]
+preywgt_cut <- prey_wgts[,c(1, 2, 3, 4, 6, 10)]
 head(preywgt_cut)
 preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
 preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
@@ -356,12 +356,31 @@ Wgt_prey <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
 print(Wgt_prey)
 ggsave("./figs/nmds_species.png", width = 6, height = 4, units = 'in')
 
+###with august into winter category
+Wgt_preyA <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
+  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=SeasonA), show.legend=F, position=position_jitter(.1))+
+  stat_ellipse(aes(fill=SeasonA, color = SeasonA), alpha=.2,type='t',size =1, geom="polygon")+ 
+  theme_classic()+
+  scale_linetype_manual(values = "solid") +
+  #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
+  #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
+  geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
+  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.15))+
+  theme(axis.text=element_text(size=15), axis.title=element_text(size=14,face="bold")) 
+print(Wgt_preyA)
+ggsave("./figs/nmds_species_seasonA.png", width = 6, height = 4, units = 'in')
 #### MRPP By Season ####
 mrpp(prey_wgts, preyEnvData$Season, distance = 'bray', weight = 3)
+#### MRPP By SeasonA ####
+mrpp(prey_wgts, preyEnvData$SeasonA, distance = 'bray', weight = 3)
 
 ### ISA By Season ####
 indval = multipatt(prey_wgts, preyEnvData$Season, control = how(nperm=999))
 summary(indval)
+### ISA By SeasonA ####
+indval = multipatt(prey_wgts, preyEnvData$SeasonA, control = how(nperm=999))
+summary(indval)
+
 
 #### MRPP By Month ####
 mrpp(prey_wgts, preyEnvData$Month, distance = 'bray', weight = 3)
