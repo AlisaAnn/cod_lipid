@@ -315,9 +315,9 @@ head(en_prey3)
 head(prey_wgts)
 preywgt_cut <- prey_wgts[,c(1, 2, 3, 6, 10)]
 head(preywgt_cut)
-preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
-preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
-preywgt_cut <- rename(preywgt_cut,"Polychaete" = "Poly4")
+preywgt_cut <- rename(preywgt_cut,"Harp" = "Harp4")
+preywgt_cut <- rename(preywgt_cut,"Gamm" = "Gammarid4")
+preywgt_cut <- rename(preywgt_cut,"Poly" = "Poly4")
 preywgt_cut <- rename(preywgt_cut,"Caprellidae" = "Caprellidae4")
 preywgt_cut <- rename(preywgt_cut,"Shrimp" = "Shrimp4")
 
@@ -365,10 +365,10 @@ Wgt_preyA <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
   #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
   #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
   geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
-  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.15))+
+  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.38))+
   theme(axis.text=element_text(size=12), axis.title=element_text(size=12,face="bold"), legend.title = element_blank()) 
 print(Wgt_preyA)
-ggsave("./figs/nmds_species_seasonA.png", width = 6, height = 4, units = 'in')
+ggsave("./figs/nmds_species_seasonA.png", width = 6, height = 5, units = 'in')
 
 #### MRPP By Season ####
 mrpp(prey_wgts, preyEnvData$Season, distance = 'bray', weight = 3)
