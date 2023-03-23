@@ -45,7 +45,6 @@ dimcheckMDS(prey_wgts,distance = "bray",k = 6,trymax = 300,autotransform = FALSE
 #### Run the NMS Ordination dimensions k = # dimensions####
 prey_wgtMDS<-metaMDS(prey_wgts, distance="bray", k=3, trymax=300, autotransform=FALSE)
 
-
 ## Set up your three NMS Principal Axes 
 NMDS1 <- prey_wgtMDS$points[,1]
 NMDS2 <- prey_wgtMDS$points[,2]
@@ -314,7 +313,7 @@ en_prey3 <- envfit(NMDS3, prey_wgts, permutations = 999, na.rm = T)
 head(en_prey3)
 #first make the plot of env var and species
 head(prey_wgts)
-preywgt_cut <- prey_wgts[,c(1, 2, 3, 4, 6, 10)]
+preywgt_cut <- prey_wgts[,c(1, 2, 3, 6, 10)]
 head(preywgt_cut)
 preywgt_cut <- rename(preywgt_cut,"Harpacticoid" = "Harp4")
 preywgt_cut <- rename(preywgt_cut,"Gammarid" = "Gammarid4")
@@ -356,9 +355,10 @@ Wgt_prey <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
 print(Wgt_prey)
 ggsave("./figs/nmds_species.png", width = 6, height = 4, units = 'in')
 
-###with august into winter category
+### with August into winter category
+##March 23, 2023 decided to use this plot
 Wgt_preyA <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
-  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=SeasonA), show.legend=F, position=position_jitter(.1))+
+  geom_point(data=codprey.plot3, aes(NMDS1, NMDS2, color=SeasonA), show.legend=T, position=position_jitter(.1))+
   stat_ellipse(aes(fill=SeasonA, color = SeasonA), alpha=.2,type='t',size =1, geom="polygon")+ 
   theme_classic()+
   scale_linetype_manual(values = "solid") +
@@ -366,9 +366,10 @@ Wgt_preyA <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
   #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
   geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
   geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.15))+
-  theme(axis.text=element_text(size=15), axis.title=element_text(size=14,face="bold")) 
+  theme(axis.text=element_text(size=12), axis.title=element_text(size=12,face="bold"), legend.title = element_blank()) 
 print(Wgt_preyA)
 ggsave("./figs/nmds_species_seasonA.png", width = 6, height = 4, units = 'in')
+
 #### MRPP By Season ####
 mrpp(prey_wgts, preyEnvData$Season, distance = 'bray', weight = 3)
 #### MRPP By SeasonA ####
@@ -380,7 +381,7 @@ summary(indval)
 ### ISA By SeasonA ####
 indval = multipatt(prey_wgts, preyEnvData$SeasonA, control = how(nperm=999))
 summary(indval)
-
+##3-23-2023 can stop here as do not use plots after this.
 
 #### MRPP By Month ####
 mrpp(prey_wgts, preyEnvData$Month, distance = 'bray', weight = 3)
