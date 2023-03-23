@@ -365,10 +365,10 @@ Wgt_preyA <- ggplot(data=codprey.plot3, aes(NMDS1, NMDS2))+
   #scale_fill_manual(values=c("#332288", "#888888", "#CC6677")) +
   #scale_color_manual(values=c("#332288", "#888888", "#661100", "#000000")) + 
   geom_segment(aes(x = 0, y = 0, xend = NMDS1, yend = NMDS2), data = prey_coord, size = 1, alpha = 0.5, colour = "black", arrow = arrow()) +
-  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.38))+
+  geom_text(data = prey_coord, aes(x=NMDS1, y = NMDS2), colour = "black", fontface = "bold", label = row.names(prey_coord), position=position_jitter(0.325))+
   theme(axis.text=element_text(size=12), axis.title=element_text(size=12,face="bold"), legend.title = element_blank()) 
 print(Wgt_preyA)
-ggsave("./figs/nmds_species_seasonA.png", width = 6, height = 5, units = 'in')
+ggsave("./figs/nmds_species_seasonA1.png", width = 6, height = 5, units = 'in')
 
 #### MRPP By Season ####
 mrpp(prey_wgts, preyEnvData$Season, distance = 'bray', weight = 3)
