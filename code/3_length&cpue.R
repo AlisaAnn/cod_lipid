@@ -243,9 +243,8 @@ plot(CPUE)
 
 ggsave("./figs/CPUE_by_year.png", width = 6, height = 4, units = "in")
 
-anova(mod1fig$gam)
-
-.
+anova(mod1$gam)
+summary(mod1$gam)
 
 
 ## ---------------------------------------
