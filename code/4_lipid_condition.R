@@ -209,5 +209,23 @@ FAfigure
 ggsave("./Figs/liverFA_poster.png", width = 6, height = 4, units = 'in')
 #this is for poster
 
+##Last thing to add to LW curve in paper
+##evaluate if lower body weight at length in Nov and Dec
+head(codFA)
+distinct(codFA,age)
+distinct(codFA,Year)
+
+ggplot(data = codFA,
+       aes(x = TL,
+           y = wwt)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+
+
+mod1 <- gam(wwt ~ s(TL, k = 4) + Month, data = codFA,
+            family = gaussian)
+plot(mod1)
+summary(mod1)
 
 
