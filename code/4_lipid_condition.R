@@ -211,6 +211,7 @@ ggsave("./Figs/liverFA_poster.png", width = 6, height = 4, units = 'in')
 
 ##Last thing to add to LW curve in paper
 ##evaluate if lower body weight at length in Nov and Dec
+
 head(codFA)
 distinct(codFA,age)
 distinct(codFA,Year)
@@ -227,5 +228,23 @@ mod1 <- gam(wwt ~ s(TL, k = 4) + Month, data = codFA,
             family = gaussian)
 plot(mod1)
 summary(mod1)
+#not happy that sample size only 196 fish (above)
+
+#try again here with codcond1 dataset
+head(codcond1)
+distinct(codcond1,age)
+distinct(codcond1,year)
+
+ggplot(data = codcond1,
+       aes(x = TL,
+           y = wgt_total, color = month)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() +
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
 
 
+mod1 <- gam(wgt_total ~ s(TL, k = 4) + month, data = codcond1,
+            family = gaussian)
+plot(mod1)
+summary(mod1)
+##above is better
