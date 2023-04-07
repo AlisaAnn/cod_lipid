@@ -48,7 +48,7 @@ CL <- ggplot(data = codFA,
            y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "% Energy stored in liver", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 plot(CL)
@@ -69,7 +69,7 @@ CM <- ggplot(data = codFA,
            y = liver_FA_conc)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "Liver energy density (mg FA/g)", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "FA-liver (mg FA/g wwt)", x = "Hepatosomatic Index (HSI wet)") +
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 plot(CM)
 b <- lm(formula = liver_FA_conc ~ HSIwet, data = codFA)
@@ -78,7 +78,7 @@ summary (b)
 
 ggsave("./figs/HSIwet_liver_FA_concentration.png", width = 6, height = 4, units = 'in')
 
-#New Figure 5
+#New Figure 5 - but now it is FIGURE 7
 # Now do top and bottom plot of liver lipids by gross condition factors (HSIwet)
 library(ggplot2)
 library("ggpubr")
@@ -87,8 +87,8 @@ Condfigure <- ggarrange(CL, CM,
                       labels = c("A", "B"),
                       ncol = 1, nrow = 2)
 Condfigure
-ggsave("./Figs/conditionFig5.png", width = 4, height = 6, units = 'in')
-#this is new Figure 5. Condition
+ggsave("./Figs/conditionFig7new.png", width = 4, height = 6, units = 'in')
+#this is new Figure 7. Condition
 
 #and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
 #Kwet relates to protein and not to muscle FA
@@ -247,4 +247,5 @@ mod1 <- gam(wgt_total ~ s(TL, k = 4) + month, data = codcond1,
             family = gaussian)
 plot(mod1)
 summary(mod1)
-##above is better
+##above is better because n = 419
+
