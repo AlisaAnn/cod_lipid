@@ -27,18 +27,10 @@ AppK <- codcond1 %>%
   ggplot(aes(x = K_wet, y = Kdry, color = Month)) +
   geom_point()+
   theme_bw()+
+  xlim(0.55,0.95)+
   labs(y = "Fulton's K dry", x = "Fulton's K wet") +
-  theme(legend.position = "bottom", legend.direction  = "horizontal")
-plot(AppK)
-
-
-AppK <- codcond1 %>%
-  ggplot(aes(x = K_wet, y = Kdry, color = AppMonth)) +
-  geom_point()+
-  theme_bw()+
-  labs(y = "Fulton's K dry", x = "Fulton's K wet") +
-  geom_smooth(data = codcond1 if AppMonth != "June", method = "lm", formula = (y ~x), color = 1)+
-  theme(legend.position = "bottom", legend.direction  = "horizontal")
+  geom_smooth(method = "lm", formula = (y ~x), color = 1)
+    
 plot(AppK)
 
 
@@ -95,7 +87,7 @@ AppH <- codcond1 %>%
   geom_smooth(method = "lm", formula = (y ~x), color = 1)
 plot(AppH)
 
-Appendix <- ggarrange(AppH, AppKnew,
+Appendix <- ggarrange(AppH, AppK,
                       labels = c("A", "B"),
                       ncol = 1, nrow = 2)+
   theme(legend.position = "right")
@@ -104,32 +96,3 @@ Appendix
 ggsave("./figs/Appendix1.png", width = 6, height = 6, units = 'in')
 ##mike how can I make two linear regressions...one for june and another for remainder of months
 
-a <- lm(formula = HSI_wet~HSIdry, data = codcond1)
-summary (a)
-
-#### PLOTTING ####
-
-plot1 <- codcond1 %>%
-  ggplot(aes(x = TL, y = wgt_total, color = Month)) +
-  geom_point(size = 3, alpha = 0.8) +
-  theme_minimal() +
-  xlab("age-0, Cook Bay 2018 and 2020")
-
-plot1
-
-plot1 <- codcond1 %>%
-  ggplot(aes(x = Kdry, y = HSIdry, color = Month)) +
-  geom_point()+
-  theme_minimal()
-plot1
-#probably not using Kdry anymore. Nov 2022 notes. test to see if relationship
-
-##these scatter plots and results with Kdry and HSIdry for age-0 only
-##show no relationship and so can test Kdry and HSI independently.
-a <- lm(formula = HSIdry~Kdry, data = codcond1)
-summary (a)
-##R2 = 0.0033, n=217) no good relationship
-
-a <- lm(formula = HSIwet~K_wet, data = codcond1)
-summary (a)
-##R2 = 0.0268, n=417) no good relationship, larger sample size than dry
