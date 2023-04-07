@@ -98,7 +98,7 @@ plot(C)
 B <- ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
   geom_point(size = 2) +
   theme_bw()+
-  theme(legend.position = c(0.4, 0.18))+
+  theme(legend.position = c(0.2, 0.18))+
   scale_colour_discrete(name = "Year") +
   labs(y = "Fulton's Condition (K dry)", x = "Day of Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
@@ -113,11 +113,11 @@ summary(mod1)
 
 
 
-Fig4 <- ggarrange(A, C, B, D,
+Fig4 <- ggarrange(A, B, C, D,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)+
   theme(legend.position = "right")
 
 Fig4
-ggsave("./figs/Figure4.png", width = 6, height = 6.5, units = 'in')
+ggsave("./figs/Figure4.png", width = 8, height = 8.5, units = 'in')
 
