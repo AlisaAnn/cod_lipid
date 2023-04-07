@@ -320,7 +320,7 @@ ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac))
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
-  ylab("log(Energy density in liver)") +
+  ylab("log (FA-liver)") +
   xlab("Day of year") +
   scale_color_manual(values = my.EDcol) +
   scale_fill_manual(values = my.EDcol)
@@ -360,7 +360,7 @@ Lnew <- ggplot(new_Ldat, aes(J_date, log_L, color = year_fac, fill = year_fac)) 
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
-  ylab("log(Proportion FA in Liver)") +
+  ylab("log (% liver FA)") +
   xlab("Day of year") +
   scale_color_manual(values = my.Lcol) +
   scale_fill_manual(values = my.Lcol)
@@ -400,7 +400,7 @@ Mnew <- ggplot(new_Mdat, aes(J_date, log_M, color = year_fac, fill = year_fac)) 
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.2),
         legend.title = element_blank()) +
-  ylab("log(Proportion FA in Muscle)") +
+  ylab("log (% muscle FA)") +
   xlab("Day of year") +
   scale_color_manual(values = my.Mcol) +
   scale_fill_manual(values = my.Mcol)
@@ -430,7 +430,7 @@ FAfigure <- ggarrange(HSI3, ED1, Lnew, Mnew,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
 FAfigure
-ggsave("./Figs/liver_Fig6new.png", width = 7, height = 5, units = 'in')
-#this is for paper Fig 6
+ggsave("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in')
+#this is for paper Fig 5
 
 
