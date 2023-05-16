@@ -4,6 +4,7 @@
 
 # Libraries
 library(patchwork)
+library(mgcv)
 
 # Load the previous script
 source("code/1_data_import.R")
@@ -174,6 +175,30 @@ mod3 <- gam(muscle_bi ~ s(J_date, k = 4) +
             family = quasibinomial)
 plot(mod3)
 summary(mod3)
+
+###
+mod2a <- gam(liver_bi ~ s(J_date, k = 4) + year_fac, data = codFA,
+            family = quasibinomial)
+summary(mod2a)
+
+new_dat <- data.frame(year_fac = as.factor(rep(c("2018", "2020"), each = 100)),
+                      J_date = c(seq(min(codFA$J_date[codFA$year_fac=="2018"]),
+                                     max(codFA$J_date[codFA$year_fac=="2018"]),
+                                     length.out = 100),
+                                 seq(min(codFA$J_date[codFA$year_fac=="2020"]),
+                                     max(codFA$J_date[codFA$year_fac=="2020"]),
+                                     length.out = 100)))
+                                           
+
+
+pred <- predict(mod2a, se.fit = F, new.data = new_dat)
+
+plot_dat <- new_dat %>%
+  mutate(predict = pred)
+
+ggplot(plot_dat, aes(J_date, predict), color = year_fac) +
+  geom_line()
+
 
 ##make a plot for AMSS poster w liver FA by month
 
