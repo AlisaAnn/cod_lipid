@@ -43,6 +43,24 @@ Appkk <- codcond1 %>%
 
 plot(Appkk)
 
+K <- lm(formula = K_wet~Kdry, data = codcond1)
+summary (K)
+##all months has R2= 0.4314, n=216
+##right here try to select for codcond1 if June only and re-run lm model
+distinct(codcond1,Month)
+codJune <- filter(codcond1, Month=="June")
+distinct(codJune,Month)
+June <- lm(formula = K_wet~Kdry, data = codJune)
+summary (June)
+###June only relationship between Kwet and Kdry is R2=0.02775, n=20
+
+##next see if there's a relationship with all months except June
+codxxJune <- filter(codcond1, Month != "June")
+distinct(codxxJune,Month)
+xxJune <- lm(formula = K_wet~Kdry, data = codxxJune)
+summary (xxJune)
+###if omit June, the relationship between Kwet and Kdry is R2=0.6595, n=196
+
 AppH <- codcond1 %>%
   ggplot(aes(x = HSIwet, y = HSIdry)) +
   geom_point()+
@@ -109,4 +127,4 @@ summary (a)
 a <- lm(formula = HSIwet~K_wet, data = codcond1)
 summary (a)
 ##R2 = 0.0268, n=417) no good relationship, larger sample size than dry
->>>>>>> 2e45709cd1e9b1346143a689fef36fd53794b82d
+
