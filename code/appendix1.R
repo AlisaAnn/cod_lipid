@@ -94,7 +94,7 @@ p2L <- codcond1 %>%
   labs(y = "Fulton's K wet", x = "HSI wet") 
 plot(p2L)
 
-Appendix1b <- ggarrange(AppH, Appkk, p1L, p2L,
+Appendix1b <- ggarrange(p2L, p1L, Appkk, AppH,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)
 
