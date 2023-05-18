@@ -103,7 +103,6 @@ plot(Appendix1b)
 ggsave("./figs/Appendix_new.png", width = 6, height = 6, units = 'in')
 
 
-###THis is LW stuff#########
 a <- lm(formula = HSI_wet~HSIdry, data = codcond1)
 summary (a)
 
@@ -114,8 +113,6 @@ plot1 <- codcond1 %>%
   xlab("age-0, Cook Bay 2018 and 2020")
 
 plot1
-
-
 
 
 ##these scatter plots and results with Kdry and HSIdry for age-0 only
