@@ -206,6 +206,14 @@ ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
   geom_smooth(method = "gam", family = "quasibinomial", formula = y ~ s(x, k = 4), se = F)
 #this plot looks same as liverFA by julian date. only now yaxis from 0 to 1
 
+##new plot May 2023
+ggplot(codFA, aes(J_date, liver_bi, color = year_fac)) +
+  geom_point() +
+  theme_bw()+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+#this plot looks same as liverFA by julian date. only now yaxis from 0 to 1
+##This plot matches the year as a separate factor. Looks like mod 9 best table 3 result
+
 mod9 <- gam(formula = log(liver_bi + 1) ~ s(J_date, k = 4) + year_fac, family = "quasibinomial", data = codFA)
 plot(mod9, se = F, resid = T, pch = 19)
 summary(mod9)
@@ -329,7 +337,7 @@ anova(modED1fig$gam)
 
 ################
 ##now plot best model (mod9) for percent liver
-modLfig <- gamm4::gamm4((log(liver_bi + 1) ~ s(J_date, k = 4) + year_fac), data = codFA,
+modLfig <- gamm4::gamm4((log(liver_bi + 1)) ~ s(J_date, k = 6) + year_fac, data = codFA,
                           random=~(1|site_fac/day_fac))
 
 
@@ -366,6 +374,22 @@ Lnew <- ggplot(new_Ldat, aes(J_date, log_L, color = year_fac, fill = year_fac)) 
   scale_fill_manual(values = my.Lcol)
 plot(Lnew)
 anova(modLfig$gam)
+
+##this is new stuff
+New_logL <- ggplot(codFA, aes(J_date, liver_bi, color = year_fac, fill = year_fac)) +
+  theme_bw()+
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log (% liver FA)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.Lcol) +
+  scale_fill_manual(values = my.Lcol)+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+plot(New_logL)
+
+##above is new based on ML comments and matches mod 9
+
 
 ###############
 ##now plot best model (mod9) for percent muscle
@@ -406,6 +430,31 @@ Mnew <- ggplot(new_Mdat, aes(J_date, log_M, color = year_fac, fill = year_fac)) 
   scale_fill_manual(values = my.Mcol)
 plot(Mnew)
 anova(modMfig$gam)
+
+#######
+New_logM <- ggplot(codFA, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
+  theme_bw()+
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.3),
+        legend.title = element_blank()) +
+  ylab("log (% muscle FA)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.Lcol) +
+  scale_fill_manual(values = my.Lcol)+
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+plot(New_logM)
+
+##above is new % muscle based on ML comments and matches mod 9
+
+FAfigure <- ggarrange(HSI3, ED1, New_logL, New_logM,
+                      labels = c("A", "B", "C", "D"),
+                      ncol = 2, nrow = 2)
+FAfigure
+ggsave("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in')
+#this is for paper Fig 5
+
+
+
 ###
 M <- ggplot(codFA, aes(J_date, muscleFA, color = year_fac)) +
   geom_point(size = 3) +
@@ -425,12 +474,3 @@ L <- ggplot(codFA, aes(J_date, liverFA, color = year_fac)) +
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 plot(L)
-
-FAfigure <- ggarrange(HSI3, ED1, Lnew, Mnew,
-                      labels = c("A", "B", "C", "D"),
-                      ncol = 2, nrow = 2)
-FAfigure
-ggsave("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in')
-#this is for paper Fig 5
-
-
