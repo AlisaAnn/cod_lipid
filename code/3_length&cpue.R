@@ -171,7 +171,7 @@ ggplot(codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   scale_colour_discrete(name = "Year") +
   labs(x = "Day of year", y = "Log scale age-0 CPUE" ) +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F) + 
-  annotate("text", x = c(45, 60), y = rep(7.2, 2), label = c("Feb", "Mar"), color = "dark grey")
+  annotate("text", x = c(45, 60), y = rep(-0.5, 2), label = c("Feb", "Mar"), color = "dark grey")
 
 
 
