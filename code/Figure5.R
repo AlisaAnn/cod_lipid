@@ -85,6 +85,10 @@ new_EDdat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
 # now predict HSIwet for these covariates
 plot_EDdat <- predict(modED1fig$gam, newdata = new_EDdat, type = "response", se.fit = T)
 
+test <- plot(modED1fig$gam, residuals = T, pch = 21, cex = 1)
+
+# https://stat.ethz.ch/pipermail/r-help/2011-February/269005.html
+
 new_EDdat <- new_dat %>%
   mutate(log_ED = plot_EDdat$fit,
          LCI = log_ED-1.096*plot_dat$se.fit,
