@@ -218,6 +218,8 @@ new_dat <- data.frame(year_fac = as.factor(rep(c(2018, 2019, 2020), each = 100))
 
 
 # now predict CPUE for new_dat and plot
+##This will be Figure 3 in paper
+##added the months as annotated text
 plot_dat <- predict(mod1$gam, newdata = new_dat, type = "response", se.fit = T)
 
 new_dat <- new_dat %>%
@@ -233,17 +235,20 @@ CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year
                   ymax = UCI), 
               alpha = 0.2,
               lty = 0) +
-  theme(legend.position = c(0.2, 0.8),
+  theme(legend.position = c(0.1, 0.85),
         legend.title = element_blank()) +
   ylab("ln(CPUE)") +
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col) +
-  geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) 
+  geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
+  annotate("text", x = c(50, 80, 110, 134, 163,  195,  230, 268, 290, 325), y = rep(-0.5, times=10), 
+           label = c("Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov Dec"), color = "dark grey")
 
 plot(CPUE)
 
 ggsave("./figs/CPUE_by_year.png", width = 6, height = 4, units = "in")
+ggsave("./figs/Figure_3.png", width = 6, height = 4, units = "in")
 
 anova(mod1$gam)
 summary(mod1$gam)
