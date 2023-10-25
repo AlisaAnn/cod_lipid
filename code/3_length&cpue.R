@@ -243,7 +243,7 @@ CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year
   scale_fill_manual(values = my.col) +
   geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
   annotate("text", x = c(50, 80, 110, 134, 163,  195,  230, 268, 290, 325), y = rep(-0.5, times=10), 
-           label = c("Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov Dec"), color = "dark grey")
+           label = c("Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov Dec"), color = "dark grey")
 
 plot(CPUE)
 
