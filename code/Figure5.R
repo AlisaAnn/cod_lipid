@@ -120,7 +120,7 @@ modLfig <- gamm4::gamm4((log(liver_bi + 1)) ~ s(J_date, k = 6) + year_fac, data 
 
 
 summary(modLfig$gam)
-
+my.Lcol = cb[c(2,6)]
 
 New_logL <- ggplot(codFA, aes(J_date, liver_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+

@@ -63,6 +63,41 @@ summary (a)
 #this shows for a loess: localpolynomial regression fitting
 #and I am not sure this is any better. how to get R^2 for this?
 
+#ICES reviewer wants data outlier point removed and another line for HSI<3
+View(codFA)
+is.numeric(codFA$HSIwet)
+sort(codFA$HSIwet)
+#first isolate HSI wet, liver FA, and FAliver
+HSI.graph <- codFA[,22:25]
+View(HSI.graph)
+head(HSI.graph)
+view(HSI.graph[141,])  #this is the row I want to remove
+HSI.graph <- HSI.graph[-141,]
+view(HSI.graph)
+max(HSI.graph$HSIwet)
+##this totally worked - new max is 2.8 for HSI
+
+plot(HSI.graph$HSIwet, HSI.graph$liverFA)
+plot(codFA$HSIwet, codFA$liverFA)
+
+HSI <- ggplot(data = HSI.graph,
+             aes(x = HSIwet,
+                 y = liverFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw()+
+  labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)") +
+  #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
+  geom_smooth(method="lm", formula= (y ~ x), color=1) 
+plot(HSI)
+
+ggsave("./figs/HSIwet_liverFA_new.png", width = 6, height = 4, units = 'in') 
+a <- lm(formula = liverFA ~ HSIwet, data = HSI.graph)
+summary (a)
+##this shows R^2 = 0.677, n = 195 for a linear model
+
+######Alisa stop here. Need to overlay this fig w paper fig and need to compute for %liver
+
+
 #for paper - compare actual liver FA concentration (FA density) with HSIwet
 #Feb 6, after poster input where request for actual values of lipid density
 CM <- ggplot(data = codFA,
