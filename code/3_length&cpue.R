@@ -252,8 +252,29 @@ ggsave("./figs/Figure_3.png", width = 6, height = 4, units = "in")
 
 anova(mod1$gam)
 summary(mod1$gam)
+##making another version of Fig 3
+##wondering if better to have month text evenly spaced, as in figure 2
+#These month text all spaced by 15th of each month
+CPUE_2 <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.2,
+              lty = 0) +
+  theme(legend.position = c(0.1, 0.85),
+        legend.title = element_blank()) +
+  ylab("ln(CPUE)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col) +
+  geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
+  annotate("text", x = c(46, 74, 105, 135, 166,  196,  227, 258, 288, 319, 349), y = rep(-0.5, times=11), 
+           label = c("Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color = "dark grey")
 
+plot(CPUE_2)
 
+ggsave("./figs/CPUE_by_year_2.png", width = 6, height = 4, units = "in")
+ggsave("./figs/Figure_3final.png", width = 6, height = 4, units = "in")
 ## ---------------------------------------
 
 ggplot(data = codcpue,
