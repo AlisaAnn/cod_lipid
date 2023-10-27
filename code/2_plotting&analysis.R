@@ -620,11 +620,13 @@ ggplot(codFA, aes(TL, liverFA, color = year_fac))+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
 
-mod10 <- gam(formula = liver_bi ~ s(TL, k = 6) + year_fac, family = "quasibinomial", data = codFA)
+mod10 <- gam(formula = liver_bi ~ s(J_date, k = 6, by = year_fac), family = "quasibinomial", data = codFA)
+ 
+#re-evaluating mod 11 now and it surpasses model 9.
+##use model 11 in the final resubmit to ICES
+summary(mod10) # best
 
-summary(mod10) # mod9 better
-
-gam.check(mod10) # mod9 better
+gam.check(mod10) 
 
 plot(mod10, se = F, resid = T, pch = 19)
 

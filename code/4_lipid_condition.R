@@ -41,13 +41,13 @@ ggplot(data = codFA,
 
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
 summary (a)
-
+view(codFA)
 
 #for poster and paper - compare liver FA with HSIwet
 CL <- ggplot(data = codFA,
        aes(x = HSIwet,
            y = liverFA)) +
-  geom_point(size = 3, alpha = 0.8) +
+  geom_point(size = 2.5, alpha = 0.8) +
   theme_bw()+
   labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
@@ -57,11 +57,13 @@ ggsave("./figs/HSIwet_liverFA.png", width = 6, height = 4, units = 'in')
 a <- lm(formula = liverFA ~ HSIwet, data = codFA)
 summary (a)
 ##this shows R^2 = 0.7314, n = 196 for a linear model
+##y = 17.1x - 6.1
 
 a <- loess(formula = liverFA ~ log(HSIwet), data = codFA)
 summary (a)
-#this shows for a loess: localpolynomial regression fitting
+# a loess: local polynomial regression fitting for < 1000 observations
 #and I am not sure this is any better. how to get R^2 for this?
+#plus, I like the linear model so it can be used by other studies w equation
 
 #ICES reviewer wants data outlier point removed and another line for HSI<3
 View(codFA)
@@ -95,15 +97,13 @@ a <- lm(formula = liverFA ~ HSIwet, data = HSI.graph)
 summary (a)
 ##this shows R^2 = 0.677, n = 195 for a linear model
 
-######Alisa stop here. Need to overlay this fig w paper fig and need to compute for %liver
-
 
 #for paper - compare actual liver FA concentration (FA density) with HSIwet
 #Feb 6, after poster input where request for actual values of lipid density
 CM <- ggplot(data = codFA,
        aes(x = HSIwet,
            y = liver_FA_conc)) +
-  geom_point(size = 3, alpha = 0.8) +
+  geom_point(size = 2.5, alpha = 0.8) +
   theme_bw()+
   labs(y = "FA-liver (mg FA/g wwt)", x = "Hepatosomatic Index (HSI wet)") +
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
@@ -185,7 +185,7 @@ c <- gam(formula = liverFA ~ TL, data = codFA)
 summary (c)
 
 ##begin MuMIn analysis to look at condition/lipid by Julian date
-##___________looking at HSI, liverFA, and muscle by J_date_____
+##___________looking at HSI, liverFA, and  muscle by J_date_____
 
 library(mgcv)
 codFA <- codFA %>%
@@ -195,6 +195,8 @@ mod1 <- gam(HSIwet ~ s(J_date, k = 4) +
               s(TL, k = 4) + year_fac, data = codFA,
             family = gaussian)
 plot(mod1)
+
+
 
 summary(mod1)
 ##based on mumlin, can run above without TL?
