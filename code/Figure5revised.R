@@ -66,6 +66,7 @@ HSI3 <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fa
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)
 plot(HSI3)
+
 anova(modH3fig$gam)
 
 ggsave("./Figs/HSIwet_vs_day_new.png", width = 6, height = 3, units = 'in')
@@ -92,8 +93,15 @@ test <- plot(modED1fig$gam, residuals = T, pch = 21, cex = 1)
 
 new_EDdat <- new_dat %>%
   mutate(log_ED = plot_EDdat$fit,
-         LCI = log_ED-1.096*plot_dat$se.fit,
-         UCI = log_ED+1.096*plot_dat$se.fit)
+         LCI = log_ED-1.96*plot_dat$se.fit,
+         UCI = log_ED+1.96*plot_dat$se.fit)
+
+# get partial residuals for plotting
+pred_modED1 <- data.frame(year_fac = as.factor(codFA$Year),
+                          J_date = codFA$J_date,
+                          log_ED = predict(modED1fig$gam, type = "response") +
+                            residuals(modED1fig$gam, type = "response"))
+
 
 my.EDcol = cb[c(2,6)]
 
@@ -110,8 +118,11 @@ ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac))
   ylab("log (FA-liver)") +
   xlab("Day of year") +
   scale_color_manual(values = my.EDcol) +
-  scale_fill_manual(values = my.EDcol)
+  scale_fill_manual(values = my.EDcol) +
+  geom_point(data = pred_modED1, alpha = 0.3)
+
 plot(ED1)
+
 anova(modED1fig$gam)
 
 ################
@@ -124,6 +135,7 @@ my.Lcol = cb[c(2,6)]
 
 New_logL <- ggplot(codFA, aes(J_date, liver_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
+  geom_point(alpha = 0.3) +
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
