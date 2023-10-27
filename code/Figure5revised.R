@@ -97,10 +97,10 @@ plot_EDdat <- predict(modED1fig$gam, newdata = new_EDdat, type = "response", se.
 
 test <- plot(modED1fig$gam, residuals = T, pch = 21, cex = 1)
 
-new_EDdat <- new_dat %>%
+new_EDdat <- new_EDdat %>%
   mutate(log_ED = plot_EDdat$fit,
-         LCI = log_ED-1.96*plot_dat$se.fit,
-         UCI = log_ED+1.96*plot_dat$se.fit)
+         LCI = log_ED-1.96*plot_EDdat$se.fit,
+         UCI = log_ED+1.96*plot_EDdat$se.fit)
 
 # get partial residuals for plotting
 pred_modED1 <- data.frame(year_fac = as.factor(codFA$Year),
@@ -137,11 +137,40 @@ anova(modED1fig$gam)
 modLfig <- gamm4::gamm4((log(liver_bi + 1)) ~ s(J_date, k = 6, by = year_fac), data = codFA,
                         random=~(1|site_fac/day_fac))
 summary(modLfig$gam)
+
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_Ldat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                        J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                   seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
+
+
+# now predict for these covariates
+plot_Ldat <- predict(modLfig$gam, newdata = new_Ldat, type = "response", se.fit = T)
+
+
+new_Ldat <- new_Ldat %>%
+  mutate(liver_bi = plot_Ldat$fit,
+         LCI = liver_bi - 1.96*plot_Ldat$se.fit,
+         UCI = liver_bi + 1.96*plot_Ldat$se.fit)
+
+# get partial residuals for plotting
+pred_modL <- data.frame(year_fac = as.factor(codFA$Year),
+                          J_date = codFA$J_date,
+                          liver_bi = predict(modLfig$gam, type = "response") +
+                            residuals(modLfig$gam, type = "response"))
+
+
+
 my.Lcol = cb[c(2,6)]
 
-New_logL <- ggplot(codFA, aes(J_date, liver_bi, color = year_fac, fill = year_fac)) +
+New_logL <- ggplot(new_Ldat, aes(J_date, liver_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
-  geom_point(alpha = 0.3) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.4,
+              lty = 0) +
+  # geom_point(alpha = 0.3) +
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
@@ -149,7 +178,10 @@ New_logL <- ggplot(codFA, aes(J_date, liver_bi, color = year_fac, fill = year_fa
   xlab("Day of year") +
   scale_color_manual(values = my.Lcol) +
   scale_fill_manual(values = my.Lcol)+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+  # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T) +
+  geom_point(data = pred_modL, alpha = 0.3)
+
+
 plot(New_logL)
 
 ###############
@@ -160,9 +192,39 @@ modMfig <- gamm4::gamm4((log(muscle_bi + 1) ~ s(J_date, k = 6, by = year_fac)), 
 
 summary(modMfig$gam)
 
+# set up a plot - predict from modH3fig$gam over the range of days observed in each year
+new_Mdat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
+                       J_date = c(seq(min(codFA$J_date[codFA$Year==2018]), max(codFA$J_date[codFA$Year==2018]), length.out = 100),
+                                  seq(min(codFA$J_date[codFA$Year==2020]), max(codFA$J_date[codFA$Year==2020]), length.out = 100)))
+
+
+# now predict for these covariates
+plot_Mdat <- predict(modMfig$gam, newdata = new_Mdat, type = "response", se.fit = T)
+
+
+new_Mdat <- new_Mdat %>%
+  mutate(muscle_bi = plot_Mdat$fit,
+         LCI = muscle_bi - 1.96*plot_Mdat$se.fit,
+         UCI = muscle_bi + 1.96*plot_Mdat$se.fit)
+
+# get partial residuals for plotting
+pred_modM <- data.frame(year_fac = as.factor(codFA$Year),
+                        J_date = codFA$J_date,
+                        muscle_bi = predict(modMfig$gam, type = "response") +
+                          residuals(modMfig$gam, type = "response"))
+
+
+
+
+
 #######
-New_logM <- ggplot(codFA, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
+New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.4,
+              lty = 0) +
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.3),
         legend.title = element_blank()) +
@@ -170,16 +232,20 @@ New_logM <- ggplot(codFA, aes(J_date, muscle_bi, color = year_fac, fill = year_f
   xlab("Day of year") +
   scale_color_manual(values = my.Lcol) +
   scale_fill_manual(values = my.Lcol)+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+  # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+  geom_point(data = pred_modM, alpha = 0.3)
+
 plot(New_logM)
 
+png("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in', res = 300)
 
 
-FAfigure <- ggarrange(HSI3, ED1, New_logL, New_logM,
+ggarrange(HSI3, ED1, New_logL, New_logM,
                       labels = c("A", "B", "C", "D"),
-                      ncol = 2, nrow = 2)
-FAfigure
-ggsave("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in')
+                      ncol = 2, nrow = 2, common.legend = T)
+
+dev.off()
+
 
 
 
