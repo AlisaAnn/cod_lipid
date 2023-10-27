@@ -46,8 +46,14 @@ plot_dat <- predict(modH3fig$gam, newdata = new_dat, type = "response", se.fit =
 
 new_dat <- new_dat %>%
   mutate(log_HSIwet = plot_dat$fit,
-         LCI = log_HSIwet-1.096*plot_dat$se.fit,
-         UCI = log_HSIwet+1.096*plot_dat$se.fit)
+         LCI = log_HSIwet-1.96*plot_dat$se.fit,
+         UCI = log_HSIwet+1.96*plot_dat$se.fit)
+
+# get partial residuals for plotting
+pred_modH3 <- data.frame(year_fac = as.factor(codFA$Year),
+                          J_date = codFA$J_date,
+                         log_HSIwet = predict(modH3fig$gam, type = "response") +
+                            residuals(modH3fig$gam, type = "response"))
 
 my.col = cb[c(2,6)]
 
@@ -64,14 +70,16 @@ HSI3 <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fa
   ylab("log(HSI wet)") +
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
-  scale_fill_manual(values = my.col)
+  scale_fill_manual(values = my.col) +
+  geom_point(data = pred_modH3, alpha = 0.3)
+
 plot(HSI3)
 
 anova(modH3fig$gam)
 
 ggsave("./Figs/HSIwet_vs_day_new.png", width = 6, height = 3, units = 'in')
 
-##now plot best model (mod1a) for EDliver
+##now plot best model (mod1a) for EDliver ------------------------------------
 modED1fig <- gamm4::gamm4((log(EDliver) ~ s(J_date, k = 6) + year_fac), data = codFA,
                           random=~(1|site_fac/day_fac))
 
@@ -88,8 +96,6 @@ new_EDdat <- data.frame(year_fac = as.factor(rep(c(2018,2020), each = 100)),
 plot_EDdat <- predict(modED1fig$gam, newdata = new_EDdat, type = "response", se.fit = T)
 
 test <- plot(modED1fig$gam, residuals = T, pch = 21, cex = 1)
-
-# https://stat.ethz.ch/pipermail/r-help/2011-February/269005.html
 
 new_EDdat <- new_dat %>%
   mutate(log_ED = plot_EDdat$fit,
