@@ -59,44 +59,53 @@ summary (a)
 ##this shows R^2 = 0.7314, n = 196 for a linear model
 ##y = 17.1x - 6.1
 
-a <- loess(formula = liverFA ~ log(HSIwet), data = codFA)
-summary (a)
+#a <- loess(formula = liverFA ~ log(HSIwet), data = codFA)
+#summary (a)
 # a loess: local polynomial regression fitting for < 1000 observations
 #and I am not sure this is any better. how to get R^2 for this?
 #plus, I like the linear model so it can be used by other studies w equation
 
 #ICES reviewer wants data outlier point removed and another line for HSI<3
-View(codFA)
 is.numeric(codFA$HSIwet)
-sort(codFA$HSIwet)
-#first isolate HSI wet, liver FA, and FAliver
-HSI.graph <- codFA[,22:25]
-View(HSI.graph)
-head(HSI.graph)
-view(HSI.graph[141,])  #this is the row I want to remove
-HSI.graph <- HSI.graph[-141,]
-view(HSI.graph)
-max(HSI.graph$HSIwet)
+max(codFA$HSIwet) #current max is 4.855
+HSI3<- codFA[,22:28]
+view(HSI3[141,])  #this is the row I want to remove
+HSI3 <- HSI3[-141,]
+max(HSI3$HSIwet)
 ##this totally worked - new max is 2.8 for HSI
 
-plot(HSI.graph$HSIwet, HSI.graph$liverFA)
+plot(HSI3$HSIwet, HSI3$liverFA)
 plot(codFA$HSIwet, codFA$liverFA)
 
-HSI <- ggplot(data = HSI.graph,
+HSI3.plot <- ggplot(data = HSI3,
              aes(x = HSIwet,
                  y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "% liver FA", x = "Hepatosomatic Index when < 3 (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
-plot(HSI)
+plot(HSI3.plot)
 
-ggsave("./figs/HSIwet_liverFA_new.png", width = 6, height = 4, units = 'in') 
-a <- lm(formula = liverFA ~ HSIwet, data = HSI.graph)
+ggsave("./figs/HSI3wet_liverFA_new.png", width = 6, height = 4, units = 'in') 
+a <- lm(formula = liverFA ~ HSIwet, data = HSI3)
 summary (a)
 ##this shows R^2 = 0.677, n = 195 for a linear model
 
+##To plot both regressions on a single plot do the following
+p <- ggplot(data = codFA,
+            aes(x = HSIwet,
+                y = liverFA)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw()+
+  labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)")+
+  geom_smooth(method = "lm", data=HSI3, aes(x=HSIwet, y = liverFA), 
+                            color= "red") + 
+  geom_smooth(method = "lm", data=codFA, aes(x=HSIwet,y=liverFA), color = "grey", 
+              alpha = 0.3) 
+p
+
+##Above is what I gave to reviewers at ICES
 
 #for paper - compare actual liver FA concentration (FA density) with HSIwet
 #Feb 6, after poster input where request for actual values of lipid density
@@ -110,9 +119,29 @@ CM <- ggplot(data = codFA,
 plot(CM)
 b <- lm(formula = liver_FA_conc ~ HSIwet, data = codFA)
 summary (b)
- ##this shows R^2 = 0.5247, n = 196 for a linear model
+ ##this y = 47.856x - 1.587, R^2 = 0.5247, n = 196 for a linear model
 
 ggsave("./figs/HSIwet_liver_FA_concentration.png", width = 6, height = 4, units = 'in')
+
+##Toward second plot for ICES reviewer, use the following
+p <- ggplot(data = codFA,
+            aes(x = HSIwet,
+                y = liver_FA_conc)) +
+  geom_point(size = 2.5, alpha = 0.8) +
+  theme_bw()+
+  labs(y = "FA-liver(mg FA/g wwt)", x = "Hepatosomatic Index (HSI wet)")+
+  geom_smooth(method = "lm", data=HSI3, aes(x=HSIwet, y = liver_FA_conc), 
+              color= "red") + 
+  geom_smooth(method = "lm", data=codFA, aes(x=HSIwet,y=liver_FA_conc), color = "grey", 
+              alpha = 0.3) 
+p
+
+b3 <- lm(formula = liver_FA_conc ~ HSIwet, data = HSI3)
+summary (b3)
+##this y = 45.703x + 0.029, R^2 = 0.4269, n = 195 for a linear model
+
+
+
 
 #New Figure 5 - but now it is FIGURE 7
 # Now do top and bottom plot of liver lipids by gross condition factors (HSIwet)
