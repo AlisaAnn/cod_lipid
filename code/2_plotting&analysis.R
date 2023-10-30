@@ -18,7 +18,7 @@ distinct(codcond1,age)
 distinct(codcond1, bay)
 distinct(codcond1, gear)
 distinct(codcond1, year) #only age-1 fish in 2019, so 2019 doesn't appear
-
+View(codcond1)
 #### PLOTTING ####
 
 plot1 <- codcond1 %>%
@@ -40,11 +40,59 @@ plot1
 ##show no relationship and so can test Kdry and HSI independently.
 a <- lm(formula = HSIdry~Kdry, data = codcond1)
 summary (a)
-##R2 = 0.0033, n=217) no good relationship
+##R2 = 0.0033, df=217, n = 219) no good relationship
 
-a <- lm(formula = HSIwet~K_wet, data = codcond1)
-summary (a)
-##R2 = 0.0268, n=417) no good relationship, larger sample size than dry
+#above is linear model and probably better to do pearson correlation test, as per ICES review
+vector.HSIdry <- codcond1$HSIdry
+vector.kdry <- codcond1$Kdry
+a.rev <- cor.test(vector.HSIdry, vector.kdry)
+a.rev
+##Pearson's correlation df = 217, n = 219, p= 0.4003, cor = -0.057) no good relationship
+##same p-value as in linear model. 200 obs deleted because NA for kdry
+
+#_________
+b <- lm(formula = HSIwet~K_wet, data = codcond1)
+summary (b)
+##R2 = 0.0268, n=419) no good relationship, larger sample size than dry
+
+##Again, need to change lm to pearson cor
+vector.HSIwet <- codcond1$HSIwet
+vector.Kwet <- codcond1$K_wet
+b.rev <- cor.test(vector.HSIwet, vector.Kwet)
+b.rev
+##Pearson r = 0.1638, n=419, df = 417, p<0.001) no good relationship, 
+
+#_________
+c <- lm(formula = Kdry~K_wet, data = codcond1)
+summary (c)
+##R2 = 0.431, n=219, df = 217) no good relationship,
+
+##Again, need to change lm to pearson cor
+c.rev <- cor.test(vector.kdry, vector.Kwet)
+c.rev
+##Pearson r = 0.6568, n=219, df = 217, p<0.001) fair relationship, 
+
+#now test only for June kwet vs kdry
+unique(codcond1$month)
+june.df <- filter(codcond1,month == "June")
+june.vector.kdry <- june.df$Kdry
+june.vector.Kwet <- june.df$K_wet
+june.rev <- cor.test(june.vector.kdry, june.vector.Kwet)
+june.rev
+##Pearson cor = 0.1666, df = 20, p = 0.4588, n = 22
+
+##now test without month of June
+notjune.df <- filter(codcond1,month != "June")
+june.vector.kdry <- notjune.df$Kdry
+june.vector.Kwet <- notjune.df$K_wet
+notjune.rev <- cor.test(june.vector.kdry, june.vector.Kwet)
+notjune.rev
+##Pearson cor = 0.8121, df = 195, p = <0.001, n = 197
+
+##return to HSIwet vs HSIdry for all dataset and test w pearson corr
+allHSI.rev <- cor.test(vector.HSIwet, vector.HSIdry)
+allHSI.rev
+##Pearson cor = 0.991, df = 217, n = 219, p < 0.0001
 
 
 #these plots of dry vs wet will be used in Appendix
