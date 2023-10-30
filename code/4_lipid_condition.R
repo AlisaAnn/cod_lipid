@@ -133,7 +133,7 @@ p <- ggplot(data = codFA,
   geom_smooth(method = "lm", data=HSI3, aes(x=HSIwet, y = liver_FA_conc), 
               color= "red") + 
   geom_smooth(method = "lm", data=codFA, aes(x=HSIwet,y=liver_FA_conc), color = "grey", 
-              alpha = 0.3) 
+              alpha = 0.3)
 p
 
 b3 <- lm(formula = liver_FA_conc ~ HSIwet, data = HSI3)
