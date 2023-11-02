@@ -93,6 +93,30 @@ C <- codcond1 %>%
 
 plot(C)
 
+##ICes reviewer wanted to see LW regression diff by year____
+distinct(codcond1, year)
+cod2018<- filter(codcond1,year==2018)
+cod2020<- filter(codcond1, year ==2020)
+Creview <- codcond1 %>%
+  ggplot(aes(x = TL, y = wgt_total, color = Month)) +
+  geom_point(size = 2, alpha = 0.8) +
+  theme_bw() +
+  geom_smooth(method = "gam", data=cod2018, aes(x=TL, y = wgt_total), 
+              color= "red") +
+  geom_smooth(method = "gam", data=cod2020, aes(x=TL, y = wgt_total), 
+              color= "green")+
+  xlab("Total length (mm)")+
+  ylab("Body weight (g)")
+
+plot(Creview)
+
+mod1 <- mgcv::gam(formula = wgt_total ~ s(TL, k = 6, by = year_fac), data = codcond1)
+mod2 <- mgcv::gam(wgt_total ~ s(TL, k = 6), data = codcond1)
+# # different curves for different years. mod1 better than mod2
+AIC(mod1,mod2)
+summary(mod1)
+
+##########
 
 # plot Fulton dry by year and Julian day
 B <- ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
@@ -113,11 +137,11 @@ summary(mod1)
 
 
 
-Fig4 <- ggarrange(A, B, C, D,
+Fig4 <- ggarrange(A, B, Creview, D,
                       labels = c("A", "B", "C", "D"),
                       ncol = 2, nrow = 2)+
   theme(legend.position = "right")
 
 Fig4
-ggsave("./figs/Figure4.png", width = 8, height = 8.5, units = 'in')
+ggsave("./figs/Figure4review.png", width = 8, height = 8.5, units = 'in')
 
