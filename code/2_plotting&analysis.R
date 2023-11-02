@@ -29,6 +29,26 @@ plot1 <- codcond1 %>%
   
 plot1
 
+##ICes reviewer wanted to see LW regression diff by year____
+library(dplyr)
+cod2018<- filter(codcond1,year==2018)
+cod2020<- filter(codcond1, year ==2020)
+plot1review <- codcond1 %>%
+  ggplot(aes(x = TL, y = wgt_total, color = Month)) +
+  geom_point(size = 3, alpha = 0.8) +
+  theme_bw() +
+  geom_smooth(method = "gam", data=cod2018, aes(x=TL, y = wgt_total), 
+              color= "red") +
+  geom_smooth(method = "gam", data=cod2020, aes(x=TL, y = wgt_total), 
+            color= "blue")+
+  xlab("age-0, Cook Bay 2018 and 2020")+
+  ylab("Body weight (g)")
+
+plot1review
+#################################
+  
+
+
 plot1 <- codcond1 %>%
   ggplot(aes(x = Kdry, y = HSIdry, color = Month)) +
   geom_point()+
