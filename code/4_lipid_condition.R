@@ -92,6 +92,7 @@ a <- lm(formula = liverFA ~ HSIwet, data = HSI3)
 summary (a)
 ##this shows R^2 = 0.677, n = 195 for a linear model
 
+
 ##To plot both regressions on a single plot do the following
 p <- ggplot(data = codFA,
             aes(x = HSIwet,
@@ -212,6 +213,9 @@ summary (b)
 
 c <- gam(formula = liverFA ~ TL, data = codFA)
 summary (c)
+d <- gam(formula = liver_wwt ~ TL, data = codFA)
+summary (d)
+
 
 ##begin MuMIn analysis to look at condition/lipid by Julian date
 ##___________looking at HSI, liverFA, and  muscle by J_date_____
