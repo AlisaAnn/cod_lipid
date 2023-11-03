@@ -29,7 +29,7 @@ plot1 <- codcond1 %>%
   
 plot1
 
-##ICes reviewer wanted to see LW regression diff by year____
+##ICes reviewer wanted to see LW regression diff by year____but these are gams not exp
 library(dplyr)
 cod2018<- filter(codcond1,year==2018)
 cod2020<- filter(codcond1, year ==2020)
@@ -46,8 +46,6 @@ plot1review <- codcond1 %>%
 
 plot1review
 #################################
-  
-
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = Kdry, y = HSIdry, color = Month)) +
@@ -97,15 +95,16 @@ unique(codcond1$month)
 june.df <- filter(codcond1,month == "June")
 june.vector.kdry <- june.df$Kdry
 june.vector.Kwet <- june.df$K_wet
+View(june.df)
 june.rev <- cor.test(june.vector.kdry, june.vector.Kwet)
 june.rev
 ##Pearson cor = 0.1666, df = 20, p = 0.4588, n = 22
 
 ##now test without month of June
 notjune.df <- filter(codcond1,month != "June")
-june.vector.kdry <- notjune.df$Kdry
-june.vector.Kwet <- notjune.df$K_wet
-notjune.rev <- cor.test(june.vector.kdry, june.vector.Kwet)
+notjune.vector.kdry <- notjune.df$Kdry
+notjune.vector.Kwet <- notjune.df$K_wet
+notjune.rev <- cor.test(notjune.vector.kdry, notjune.vector.Kwet)
 notjune.rev
 ##Pearson cor = 0.8121, df = 195, p = <0.001, n = 197
 
