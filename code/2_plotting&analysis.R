@@ -46,6 +46,48 @@ plot1review <- codcond1 %>%
 
 plot1review
 #################################
+##Again, second plot for reviewer #1: with TL < 110 mm
+##ICes reviewer wanted to see LW regression diff by year____but these are gams not exp
+library(dplyr)
+cod2018<- filter(codcond1,year==2018 & TL<=110)
+cod2020<- filter(codcond1, year ==2020 & TL<=110)
+plot2review <- codcond1 %>%
+  ggplot(aes(x = TL, y = wgt_total, color = Month)) +
+  #geom_point(size = 3, alpha = 0.8) +
+  theme_bw() +
+  geom_smooth(method = "gam", data=cod2018, aes(x=TL, y = wgt_total), 
+              color= "red", se = TRUE) +
+  geom_smooth(method = "gam", data=cod2020, aes(x=TL, y = wgt_total), 
+              color= "blue", se = TRUE)+
+  xlab("age-0, Cook Bay 2018 and 2020")+
+  ylab("Body weight (g)")
+
+plot2review
+#######################
+#relationship betweeen TL and HSIwet?
+plot1 <- codcond1 %>%
+  ggplot(aes(x = TL, y = HSI_wet)) +
+  geom_point()+
+  theme_minimal()+
+  geom_smooth()
+plot1
+
+TLmod1 <- gam(HSI_wet ~ s(TL), data = codcond1)
+summary(TLmod1)# GAM says r=0.12, n = 419
+
+#relationship betweeen TL and liver weight?
+plot1 <- codcond1 %>%
+  ggplot(aes(x = TL, y = liver_wgt)) +
+  geom_point()+
+  theme_minimal()+
+  geom_smooth()
+plot1
+
+TLmod1 <- gam(liver_wgt ~ s(TL), data = codcond1)
+summary(TLmod1)# GAM says r=0.636, n = 419
+
+
+###########################
 
 plot1 <- codcond1 %>%
   ggplot(aes(x = Kdry, y = HSIdry, color = Month)) +
@@ -95,7 +137,7 @@ unique(codcond1$month)
 june.df <- filter(codcond1,month == "June")
 june.vector.kdry <- june.df$Kdry
 june.vector.Kwet <- june.df$K_wet
-View(june.df)
+#View(june.df)
 june.rev <- cor.test(june.vector.kdry, june.vector.Kwet)
 june.rev
 ##Pearson cor = 0.1666, df = 20, p = 0.4588, n = 22
@@ -104,7 +146,7 @@ june.rev
 notjune.df <- filter(codcond1,month != "June")
 notjune.vector.kdry <- notjune.df$Kdry
 notjune.vector.Kwet <- notjune.df$K_wet
-notjune.rev <- cor.test(notjune.vector.kdry, notjune.vector.Kwet)
+notjune.rev <- cor.test(notjune.vector.kdry, notjune.vector.Kwet, na.remove = TRUE)
 notjune.rev
 ##Pearson cor = 0.8121, df = 195, p = <0.001, n = 197
 
