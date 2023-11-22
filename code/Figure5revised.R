@@ -65,9 +65,9 @@ HSI3 <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fa
               lty = 0) +
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.2, 0.8),
-        legend.title = element_blank()) +
-  ylab("log(HSI wet)") +
+   #     legend.position = c(0.2, 0.8),
+  legend.title = element_blank()) +
+  ylab("log (HSI wet)") +
   xlab("Day of year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col) +
@@ -119,8 +119,8 @@ ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac))
               lty = 0) +
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.2, 0.8),
-        legend.title = element_blank()) +
+   #     legend.position = c(0.2, 0.8),
+  legend.title = element_blank()) +
   ylab("log (FA-liver)") +
   xlab("Day of year") +
   scale_color_manual(values = my.EDcol) +
@@ -171,9 +171,9 @@ New_logL <- ggplot(new_Ldat, aes(J_date, liver_bi, color = year_fac, fill = year
               alpha = 0.4,
               lty = 0) +
   # geom_point(alpha = 0.3) +
-  theme(axis.title.x = element_blank(),
-        legend.position = c(0.2, 0.8),
-        legend.title = element_blank()) +
+#  theme(axis.title.x = element_blank(),
+ #       legend.position = c(0.2, 0.8),
+        theme(legend.title = element_blank()) +
   ylab("% Liver FA") +
   xlab("Day of Year") +
   scale_color_manual(values = my.Lcol) +
@@ -216,7 +216,7 @@ pred_modM <- data.frame(year_fac = as.factor(codFA$Year),
 
 
 
-
+my.Mcol = cb[c(2,6)]
 #######
 New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
@@ -227,11 +227,11 @@ New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = yea
                   ymax = UCI), 
               alpha = 0.4,
               lty = 0) +
-  theme(axis.title.x = element_blank(),
-  legend.position = c(0.2, 0.3),
-     legend.title = element_blank()) +
-  scale_color_manual(values = my.Lcol) +
-  scale_fill_manual(values = my.Lcol)+
+  #theme(axis.title.x = element_blank(),
+  #legend.position = c(0.2, 0.3),
+     theme(legend.title = element_blank()) +
+  scale_color_manual(values = my.Mcol) +
+  scale_fill_manual(values = my.Mcol)+
   # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
   geom_point(data = pred_modM, alpha = 0.3)
 
@@ -240,16 +240,56 @@ plot(New_logM)
 png("./Figs/liver_Fig6revised.png", width = 7, height = 5, units = 'in', res = 300)
 
 
-Fig6 <- ggarrange(HSI3, ED1, New_logL, New_logM,
+Fig6 <- ggarrange(HSI3, ED1, New_logL, New_logM, 
                       labels = c("A", "B", "C", "D"), 
                       ncol = 2, nrow = 2, legend = c("bottom"), 
-                  common.legend = T)
+                  common.legend = T) + bgcolor("white")
 Fig6
-ggsave("./figs/Figure6revised.png", width = 8, height = 8.5, units = 'in')
-ggsave("./figs/Abookire_etal_Figure6.pdf", width = 8, height = 8.5, units = 'in')
+
+ggsave("./figs/Figure6revised.png", width = 6, height = 4, units = 'in')
 dev.off()
+#library(grid)
+#Fig6new <- annotate_figure(Fig6, bottom = textGrob("Day of Year", gp = gpar(cex = 1.1)))
+#Fig6new
+
+ggsave("./figs/Figure6revised.png", width = 6, height = 4, units = 'in')
+ggsave("./figs/Abookire_etal_Figure6.pdf", width = 6, height = 4)
 
 
 
 
 
+
+###Trying to figure out why muscle only goes to 0.7 #in end, think it is OK
+##plot points are residuals, not acutal data
+ggplot(data = codFA,
+       aes(x =muscle_bi,
+           y = liver_bi))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal() 
+
+test <- data.frame(pred_modL = pred_modL$liver_bi, 
+                   pred_modM = pred_modM$muscle_bi)
+ggplot(data = test,
+       aes(x = pred_modM,
+           y = pred_modL))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal()
+######
+testM <- data.frame(pred_modM = pred_modM$muscle_bi,
+                    act_m = codFA$muscle_bi)
+head(testM)
+ggplot(data = testM,
+       aes(x = pred_modM,
+           y = act_m))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal()                        
+###do same for liver
+testL <- data.frame(pred_modL = pred_modL$liver_bi,
+                    act_l = codFA$liver_bi)
+head(testL)
+ggplot(data = testL,
+       aes(x = pred_modL,
+           y = act_l))+
+  geom_point(size = 3, alpha = 0.8) +
+  theme_minimal()       
