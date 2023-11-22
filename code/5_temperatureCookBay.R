@@ -33,12 +33,15 @@ cooktemp <- cooktemp %>%
 
 str(cooktemp)
 
+my.col = cb[c(2,11,6)]
+
 tempPlot <- ggplot(cooktemp, aes(J_date, Avg_Temp, color = year_fac)) +
   geom_point(alpha = 0.2) +
   theme_bw() +
   labs(x = "Day of Year", y = "Average Water Temp (˚C)") +
   theme(legend.position = c(0.2,0.7))+
-  scale_colour_discrete(name = "Year") +
+  #scale_colour_discrete(manual = "Year") +
+  scale_color_manual(values = my.col) +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F) +
   #annotate("text", x = c(1,32,60,91, 121, 152, 182, 213, 244, 274, 305, 335), y = rep(0.1, times=12), label = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color="dark grey")
   annotate("text", x = c(15,46,74,105, 135, 166, 196, 227, 258, 288, 319, 349), y = rep(0.1, times=12), label = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color="dark grey")
