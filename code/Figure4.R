@@ -27,7 +27,10 @@ A <- ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, 
   geom_point() +
   theme_bw()+
   theme(legend.position = c(0.2, 0.7))+
+  theme(legend.title = element_blank()) +
   scale_colour_discrete(name = "Year") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)+
   labs(x = "Day of Year", y = "Total Length (mm)")+
   geom_smooth(method = "gam", formula = y ~ s(x, k = 6), se = F)
 plot(A)
@@ -65,7 +68,7 @@ codcond1 <- codcond1 %>%
          site_fac = as.factor(site),
          day_fac = as.factor(Julian_date))
 
-## Figure 5 -plot to show males last to be in nursery area
+## Figure 4d -plot to show males last to be in nursery area
 head(codcond)
 distinct(codcond, age) #age-0 and age-1
 distinct(codcond1,age) #only age-0
@@ -119,13 +122,20 @@ summary(mod1)
 mod3 <- gam(formula = wgt_total ~ s(TL, k = 6, by = Month), data = codcond1)
 summary(mod3)
 ##########
+# try and match color in plot A and B to figure 6
+
+my.col = cb[c(2,6)]
+
 
 # plot Fulton dry by year and Julian day
 B <- ggplot(codcond1, aes(Julian_date, Kdry, color = year_fac)) +
   geom_point(size = 2) +
   theme_bw()+
-  theme(legend.position = c(0.2, 0.18))+
+  theme(legend.position = c(0.2, 0.18)) +  
+  theme(legend.title = element_blank()) +
   scale_colour_discrete(name = "Year") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)+
   labs(y = "Fulton's Condition (K dry)", x = "Day of Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F)
 
@@ -139,11 +149,10 @@ summary(mod1)
 
 
 
-Fig4 <- ggarrange(A, B, Creview, D,
+Fig4 <- ggarrange(A, B, C, D,
                       labels = c("A", "B", "C", "D"),
-                      ncol = 2, nrow = 2)+
-  theme(legend.position = "right")
+                      ncol = 2, nrow = 2)
 
 Fig4
-ggsave("./figs/Figure4review.png", width = 8, height = 8.5, units = 'in')
-
+#ggsave("./figs/Figure4review.png", width = 8, height = 8.5, units = 'in')
+ggsave("./figs/Figure4color.png", width = 8, height = 8.5, units = 'in')
