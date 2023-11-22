@@ -237,8 +237,8 @@ CPUE <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = year
               lty = 0) +
   theme(legend.position = c(0.1, 0.85),
         legend.title = element_blank()) +
-  ylab("ln(CPUE)") +
-  xlab("Day of year") +
+  ylab("log (CPUE + 1)") +
+  xlab("Day of Year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col) +
   geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
@@ -261,10 +261,10 @@ CPUE_2 <- ggplot(new_dat, aes(Julian_date, log_cpue, color = year_fac, fill = ye
                   ymax = UCI), 
               alpha = 0.2,
               lty = 0) +
-  theme(legend.position = c(0.1, 0.85),
+  theme(legend.position = c(0.1, 0.75),
         legend.title = element_blank()) +
-  ylab("ln(CPUE)") +
-  xlab("Day of year") +
+  ylab("log (CPUE +1)") +
+  xlab("Day of Year") +
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col) +
   geom_point(data = codcpue, aes(Julian_date, log_cpue, color = year_fac)) +
@@ -275,6 +275,7 @@ plot(CPUE_2)
 
 ggsave("./figs/CPUE_by_year_2.png", width = 6, height = 4, units = "in")
 ggsave("./figs/Figure_3final.png", width = 6, height = 4, units = "in")
+ggsave("./figs/Abookire_etal_Figure_3.pdf", width = 6, height = 4, units = "in")
 ## ---------------------------------------
 
 ggplot(data = codcpue,

@@ -40,13 +40,15 @@ tempPlot <- ggplot(cooktemp, aes(J_date, Avg_Temp, color = year_fac)) +
   theme(legend.position = c(0.2,0.7))+
   scale_colour_discrete(name = "Year") +
   geom_smooth(method = "gam", formula = y ~ s(x, k = 8), se = F) +
-  annotate("text", x = c(1,32,60,91, 121, 152, 182, 213, 244, 274, 305, 335), y = rep(0.1, times=12), label = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color="dark grey")
+  #annotate("text", x = c(1,32,60,91, 121, 152, 182, 213, 244, 274, 305, 335), y = rep(0.1, times=12), label = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color="dark grey")
+  annotate("text", x = c(15,46,74,105, 135, 166, 196, 227, 258, 288, 319, 349), y = rep(0.1, times=12), label = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"), color="dark grey")
 
 tempPlot
+##moved the text so month names line up w day 15 instead of day1, 
+##now it is consisten wtih figure 3 month names
 
 ggsave("./figs/Cook_Bay_Temp1.png", width = 6, height = 4, units = 'in')
-ggsave("./figs/Figure_2.png", width = 6, height = 4, units = 'in')
-
+ggsave("./figs/Figure_2.pdf", width = 6, height = 4, units = 'in')
 
 
 # fit gam to predict maximum, etc. 

@@ -40,8 +40,12 @@ ggplot(data = codFA,
   theme_minimal() 
 
 a <- lm(formula = HSIwet ~ liverFA, data = codFA)
+a <- lm(formula = liverFA ~ HSIwet, data = codFA)
 summary (a)
 view(codFA)
+par(mfrow=c(2,2))
+plot(a) ##can see Cook's Distance is <0.5 so that high HSI has no input or leverage
+
 
 #for poster and paper - compare liver FA with HSIwet
 CL <- ggplot(data = codFA,

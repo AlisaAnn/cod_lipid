@@ -174,8 +174,8 @@ New_logL <- ggplot(new_Ldat, aes(J_date, liver_bi, color = year_fac, fill = year
   theme(axis.title.x = element_blank(),
         legend.position = c(0.2, 0.8),
         legend.title = element_blank()) +
-  ylab("log (% liver FA)") +
-  xlab("Day of year") +
+  ylab("% Liver FA") +
+  xlab("Day of Year") +
   scale_color_manual(values = my.Lcol) +
   scale_fill_manual(values = my.Lcol)+
   # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T) +
@@ -220,16 +220,16 @@ pred_modM <- data.frame(year_fac = as.factor(codFA$Year),
 #######
 New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
+  xlab("Day of Year") +
+    ylab("% Muscle FA") +
   geom_line() +
   geom_ribbon(aes(ymin = LCI,
                   ymax = UCI), 
               alpha = 0.4,
               lty = 0) +
   theme(axis.title.x = element_blank(),
-        legend.position = c(0.2, 0.3),
-        legend.title = element_blank()) +
-  ylab("log (% muscle FA)") +
-  xlab("Day of year") +
+  legend.position = c(0.2, 0.3),
+     legend.title = element_blank()) +
   scale_color_manual(values = my.Lcol) +
   scale_fill_manual(values = my.Lcol)+
   # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
@@ -237,13 +237,16 @@ New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = yea
 
 plot(New_logM)
 
-png("./Figs/liver_Fig5new1.png", width = 7, height = 5, units = 'in', res = 300)
+png("./Figs/liver_Fig6revised.png", width = 7, height = 5, units = 'in', res = 300)
 
 
-ggarrange(HSI3, ED1, New_logL, New_logM,
-                      labels = c("A", "B", "C", "D"),
-                      ncol = 2, nrow = 2, common.legend = T)
-
+Fig6 <- ggarrange(HSI3, ED1, New_logL, New_logM,
+                      labels = c("A", "B", "C", "D"), 
+                      ncol = 2, nrow = 2, legend = c("bottom"), 
+                  common.legend = T)
+Fig6
+ggsave("./figs/Figure6revised.png", width = 8, height = 8.5, units = 'in')
+ggsave("./figs/Abookire_etal_Figure6.pdf", width = 8, height = 8.5, units = 'in')
 dev.off()
 
 
