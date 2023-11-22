@@ -2,7 +2,7 @@
 ##want to keep fig 4 with length by date
 ##and also add the figure of Kdry by date
 
-Libraries
+#Libraries
 library(patchwork)
 library(tidyverse)
 library(mgcv)
@@ -11,6 +11,9 @@ library(gamm4)
 library(ggplot2)
 library("ggpubr")
 
+theme_set(theme_bw())
+cb <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+my.col = cb[c(2,6)]
 
 # Load the previous script
 source("code/1_data_import.R")
@@ -32,7 +35,8 @@ A <- ggplot(filter(codlen, year_fac %in% c(2018, 2020) & TL < 200), aes(J_date, 
   scale_color_manual(values = my.col) +
   scale_fill_manual(values = my.col)+
   labs(x = "Day of Year", y = "Total Length (mm)")+
-  geom_smooth(method = "gam", formula = y ~ s(x, k = 6), se = F)
+  geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = F) 
+  
 plot(A)
 
 ggsave("./figs/length_by_date_2018_2020.png", width = 6, height = 4, units = 'in')
