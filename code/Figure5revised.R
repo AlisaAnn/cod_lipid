@@ -1,4 +1,4 @@
-# This is Fig 5 in paper
+# This is Fig 6 in resubmitted ICES paper
 
 # Libraries
 library(patchwork)
@@ -120,7 +120,7 @@ ED1 <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac))
   # facet_wrap(~facet, scales = "free_x") +
   theme(axis.title.x = element_blank(),
    #     legend.position = c(0.2, 0.8),
-  legend.title = element_blank()) +
+    legend.title = element_blank()) +
   ylab("log (FA-liver)") +
   xlab("Day of year") +
   scale_color_manual(values = my.EDcol) +
@@ -170,10 +170,10 @@ New_logL <- ggplot(new_Ldat, aes(J_date, liver_bi, color = year_fac, fill = year
                   ymax = UCI), 
               alpha = 0.4,
               lty = 0) +
-  # geom_point(alpha = 0.3) +
-#  theme(axis.title.x = element_blank(),
+  #geom_point(alpha = 0.3) +
+  #theme(axis.title.x = element_blank(),
  #       legend.position = c(0.2, 0.8),
-        theme(legend.title = element_blank()) +
+  theme(legend.title = element_blank()) +
   ylab("% Liver FA") +
   xlab("Day of Year") +
   scale_color_manual(values = my.Lcol) +
@@ -239,14 +239,14 @@ plot(New_logM)
 
 png("./Figs/liver_Fig6revised.png", width = 7, height = 5, units = 'in', res = 300)
 
-
+dev.off()
 Fig6 <- ggarrange(HSI3, ED1, New_logL, New_logM, 
                       labels = c("A", "B", "C", "D"), 
                       ncol = 2, nrow = 2, legend = c("bottom"), 
                   common.legend = T) + bgcolor("white")
 Fig6
 
-ggsave("./figs/Figure6revised.png", width = 6, height = 4, units = 'in')
+ggsave("./figs/Figure6revised.png", width = 6, height = 6, units = 'in')
 dev.off()
 #library(grid)
 #Fig6new <- annotate_figure(Fig6, bottom = textGrob("Day of Year", gp = gpar(cex = 1.1)))

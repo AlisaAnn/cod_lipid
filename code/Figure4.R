@@ -123,7 +123,7 @@ mod2 <- mgcv::gam(wgt_total ~ s(TL, k = 6), data = codcond1)
 AIC(mod1,mod2)
 summary(mod1)
 
-mod3 <- gam(formula = wgt_total ~ s(TL, k = 6, by = Month), data = codcond1)
+mod3 <- mgcv::gam(formula = wgt_total ~ s(TL, k = 6, by = Month), data = codcond1)
 summary(mod3)
 ##########
 # try and match color in plot A and B to figure 6
