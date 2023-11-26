@@ -186,9 +186,9 @@ plot(New_logL)
 
 ###############
 ##now plot best model (mod9) for percent muscle
-modMfig <- gamm4::gamm4((log(muscle_bi + 1) ~ s(J_date, k = 6, by = year_fac)), data = codFA,
-                        random=~(1|site_fac/day_fac))
 
+library(mgcv)
+modMfig <- gamm4::gamm4((log(muscle_bi + 1) ~ s(J_date, k = 6, by = year_fac)), data = codFA, random=~(1|site_fac/day_fac))
 
 summary(modMfig$gam)
 
@@ -218,10 +218,12 @@ pred_modM <- data.frame(year_fac = as.factor(codFA$Year),
 
 my.Mcol = cb[c(2,6)]
 #######
+
 New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = year_fac)) +
   theme_bw()+
+  geom_line() +
   xlab("Day of Year") +
-    ylab("% Muscle FA") +
+  ylab("% Muscle FA") +
   geom_line() +
   geom_ribbon(aes(ymin = LCI,
                   ymax = UCI), 
@@ -229,11 +231,12 @@ New_logM <- ggplot(new_Mdat, aes(J_date, muscle_bi, color = year_fac, fill = yea
               lty = 0) +
   #theme(axis.title.x = element_blank(),
   #legend.position = c(0.2, 0.3),
-     theme(legend.title = element_blank()) +
+  theme(legend.title = element_blank()) +
   scale_color_manual(values = my.Mcol) +
   scale_fill_manual(values = my.Mcol)+
-  # geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)
+  #geom_smooth(method = "gam", formula = y ~ s(x, k = 4), se = T)+
   geom_point(data = pred_modM, alpha = 0.3)
+  #geom_point(data = codFA,aes(x = J_date, y = muscle_bi, color = year_fac))
 
 plot(New_logM)
 

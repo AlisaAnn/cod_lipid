@@ -73,7 +73,7 @@ plot1 <- codcond1 %>%
 plot1
 
 TLmod1 <- gam(HSI_wet ~ s(TL), data = codcond1)
-summary(TLmod1)# GAM says r=0.12, n = 419
+summary(TLmod1)# GAM says r=0.122, n = 419
 
 #relationship betweeen TL and liver weight?
 plot1 <- codcond1 %>%
