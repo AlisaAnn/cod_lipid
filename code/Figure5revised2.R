@@ -132,6 +132,7 @@ plot(ED1)
 
 anova(modED1fig$gam)
 
+
 ################
 ##now plot submitted best model (mod11) for percent liver
 ##plot is revised where it is BY year (plot looks the same. it is really table 3 that has changed)
@@ -276,16 +277,17 @@ dev.off()
 Fig6 <- ggarrange(HSI3, ED1, New_logL1, New_logM1, 
                       labels = c("A", "B", "C", "D"), 
                       ncol = 2, nrow = 2, legend = c("bottom"), 
-                  common.legend = T) + bgcolor("white")
+                  common.legend = T) + bgcolor("white") + border(color = "white")
+  
 Fig6
 
-ggsave("./figs/Figure6revised.png", width = 6, height = 6, units = 'in')
+ggsave("./figs/Figure6rev.png", width = 6, height = 6, units = 'in')
 dev.off()
 #library(grid)
 #Fig6new <- annotate_figure(Fig6, bottom = textGrob("Day of Year", gp = gpar(cex = 1.1)))
 #Fig6new
 
-ggsave("./figs/Figure6revised.png", width = 6, height = 4, units = 'in')
+ggsave("./figs/Figure6revised2.png", width = 6, height = 4, units = 'in')
 ggsave("./figs/Abookire_etal_Figure6.pdf", width = 6, height = 4)
 
 
