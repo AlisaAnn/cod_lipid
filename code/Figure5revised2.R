@@ -80,6 +80,28 @@ anova(modH3fig$gam)
 
 ggsave("./Figs/HSIwet_vs_day_new.png", width = 6, height = 3, units = 'in')
 
+##########
+HSI3a <- ggplot(new_dat, aes(J_date, log_HSIwet, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.4,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log(HSI wet)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.col) +
+  scale_fill_manual(values = my.col)+
+  geom_point(data = codFA, aes(x = J_date, y = log.HSI.wet, color = year_fac))
+plot(HSI3a)
+
+
+
+
+
 ##now plot best model (mod1a) for EDliver ------------------------------------
 modED1fig <- gamm4::gamm4((log(EDliver) ~ s(J_date, k = 6) + year_fac), data = codFA,
                           random=~(1|site_fac/day_fac))
@@ -132,7 +154,26 @@ plot(ED1)
 
 anova(modED1fig$gam)
 
+#############
+ED1a <- ggplot(new_EDdat, aes(J_date, log_ED, color = year_fac, fill = year_fac)) +
+  geom_line() +
+  geom_ribbon(aes(ymin = LCI,
+                  ymax = UCI), 
+              alpha = 0.4,
+              lty = 0) +
+  # facet_wrap(~facet, scales = "free_x") +
+  theme(axis.title.x = element_blank(),
+        legend.position = c(0.2, 0.8),
+        legend.title = element_blank()) +
+  ylab("log (FA-liver)") +
+  xlab("Day of year") +
+  scale_color_manual(values = my.EDcol) +
+  scale_fill_manual(values = my.EDcol) +
+  geom_point(data = codFA, aes(x = J_date, y = log(EDliver), color = year_fac))
+plot(ED1a)
 
+
+##########
 ################
 ##now plot submitted best model (mod11) for percent liver
 ##plot is revised where it is BY year (plot looks the same. it is really table 3 that has changed)
@@ -274,14 +315,15 @@ plot(New_logM1)
 png("./Figs/liver_Fig6revised.png", width = 7, height = 5, units = 'in', res = 300)
 
 dev.off()
-Fig6 <- ggarrange(HSI3, ED1, New_logL1, New_logM1, 
+Fig6 <- ggarrange(HSI3a, ED1a, New_logL1, New_logM1, 
                       labels = c("A", "B", "C", "D"), 
                       ncol = 2, nrow = 2, legend = c("bottom"), 
                   common.legend = T) + bgcolor("white") + border(color = "white")
   
 Fig6
 
-ggsave("./figs/Figure6rev.png", width = 6, height = 6, units = 'in')
+ggsave("./figs/Figure6hero.png", width = 6, height = 6, units = 'in')
+##this one named hero is the best and the one to use! finally!
 dev.off()
 #library(grid)
 #Fig6new <- annotate_figure(Fig6, bottom = textGrob("Day of Year", gp = gpar(cex = 1.1)))
