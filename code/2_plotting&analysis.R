@@ -963,6 +963,10 @@ ggplot(data = codcond1,
   geom_jitter(alpha = 0.5)+
   theme_minimal()
 
+gam_model1820gut <- aov(stom_percent_wgt ~ Month, data = codcond1)
+#yes, there is a difference by month (p=0.0236, n = 419, df = 6)
+summary(gam_model1820gut)
+TukeyHSD(gam_model1820gut)
 
 #repeat anova for both years w stomach weight
 gam_model1820gut <- gam(stom_percent_wgt ~ Month, data = codcond1)
