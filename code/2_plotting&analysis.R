@@ -969,8 +969,10 @@ summary(gam_model1820gut)
 TukeyHSD(gam_model1820gut)
 
 #repeat anova for both years w stomach weight
-gam_model1820gut <- gam(stom_percent_wgt ~ Month, data = codcond1)
+gam_model1820gut <- lmer((stom_percent_wgt/100) ~ Month, data = codcond1, family = binomial)
 gam_model1820gut
 
-summary(gam_model1820gut)
 
+summary(gam_model1820gut)
+par(mfrow=c(2,2))
+plot(gam_model1820gut)
