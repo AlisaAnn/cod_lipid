@@ -39,7 +39,7 @@ ggplot(data = codFA,
   geom_point(size = 3, alpha = 0.8) +
   theme_minimal() 
 
-a <- lm(formula = HSIwet ~ liverFA, data = codFA)
+
 a <- lm(formula = liverFA ~ HSIwet, data = codFA)
 summary (a)
 view(codFA)
@@ -53,7 +53,7 @@ CL <- ggplot(data = codFA,
            y = liverFA)) +
   geom_point(size = 2.5, alpha = 0.8) +
   theme_bw()+
-  labs(y = "% liver FA", x = "Hepatosomatic Index (HSI wet)") +
+  labs(y = "% Liver FA", x = "Hepatosomatic Index (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 plot(CL)
@@ -86,7 +86,7 @@ HSI3.plot <- ggplot(data = HSI3,
                  y = liverFA)) +
   geom_point(size = 3, alpha = 0.8) +
   theme_bw()+
-  labs(y = "% liver FA", x = "Hepatosomatic Index when < 3 (HSI wet)") +
+  labs(y = "% Liver FA", x = "Hepatosomatic Index when < 3 (HSI wet)") +
   #geom_smooth(method="loess", formula = y ~ log(x), color=1) 
   geom_smooth(method="lm", formula= (y ~ x), color=1) 
 plot(HSI3.plot)
@@ -144,8 +144,9 @@ p
 b3 <- lm(formula = liver_FA_conc ~ HSIwet, data = HSI3)
 summary (b3)
 ##this y = 45.703x + 0.029, R^2 = 0.4269, n = 195 for a linear model
-
-
+b4 <- lm(formula = liver_FA_conc ~ HSIwet, data = codFA)
+summary (b4)
+##this y = 47.856x - 1.587, R^2 = 0.5223, n = 196 for a linear model
 
 
 #New Figure 5 - but now it is FIGURE 7
@@ -158,7 +159,7 @@ Condfigure <- ggarrange(CL, CM,
                       ncol = 1, nrow = 2)
 Condfigure
 ggsave("./Figs/conditionFig7new.png", width = 4, height = 6, units = 'in')
-#this is new Figure 7. Condition
+#this is new Figure 7 for paper resubmit to ICES. Condition
 
 #and I think I am going to omit this figure that has HSIwet and FultonK bc Kwet doesn't make sense anymore
 #Kwet relates to protein and not to muscle FA
