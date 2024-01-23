@@ -189,61 +189,49 @@ library(tidyverse)
 library(lubridate)
 .libPaths()
 
+
 # Read in the data and rename any columns that need renaming
 lipid <- read_csv("data/lipid_whole_poster_compare.csv")
 str(lipid)
 
-FA1 <- ggplot(data = lipid, aes(x = as.factor(Month), y = Total_FA_mg)) +
+as.numeric(lipid$Total_FA_mg)
+as.numeric(lipid$PerLiverFA)
+as.numeric(lipid$PerMuscleFA)
+as.numeric(lipid$HIS)
+str(lipid)
+
+lipid2 <- read_csv("data/lipid_whole_poster_compare2.csv")
+str(lipid2)
+as.numeric(lipid2$LiverFA)
+as.numeric(lipid2$PercentLiver)
+as.numeric(lipid2$PercentMuscle)
+as.numeric(lipid2$HIS)
+as.numeric(lipid2$WholeBodyFA)
+str(lipid2)
+
+lipid2 <- mutate(lipid2, Month = fct_relevel(Month, c("June", "July", "Aug",
+                                                          "Sept", "Oct", "Nov", "Dec")))
+
+FA1 <- ggplot(data = lipid2, aes(x = as.factor(Month), y = WholeBodyFA)) +
   geom_boxplot(color = "black", fill = "orange")+
   theme_minimal() +
+  labs(y = "Whole body FA (mg/g wwt)", x = "Month") +
   theme(legend.position = "none")
 
 FA1
 
-FAL <- ggplot(data = lipid, aes(x = as.factor(Month), y = PerLiverFA)) +
+FAL <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PercentLiver)) +
   geom_boxplot(color = "black", fill = "orange")+
   theme_minimal() +
+  labs(y = "% Liver FA", x = "") +
   theme(legend.position = "none")
 
 FAL
-FAM <- ggplot(data = lipid, aes(x = as.factor(Month), y = PerMuscleFA)) +
+
+FAM <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PercentMuscle)) +
   geom_boxplot(color = "black", fill = "orange")+
   theme_minimal() +
-  theme(legend.position = "none")
-
-FAM
-
-HSI <- ggplot(data = lipid, aes(x = as.factor(Month), y = HIS)) +
-  geom_boxplot(color = "black", fill = "orange")+
-  theme_minimal() +
-  theme(legend.position = "none")
-
-HSI
-Poster_FA <- ggarrange(FAM, FAL, FA1, HSI,
-                     labels = c("A", "B", "C", "D"),
-                     ncol = 1, nrow = 4)
-Poster_FA
-
-##try only with 2020
-lipid2 <- filter(lipid, year==2020)
-distinct(lipid2,year)
-
-FA1 <- ggplot(data = lipid2, aes(x = as.factor(Month), y = Total_FA_mg)) +
-  geom_boxplot(color = "black", fill = "orange")+
-  theme_minimal() +
-  theme(legend.position = "none")
-
-FA1
-
-FAL <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PerLiverFA)) +
-  geom_boxplot(color = "black", fill = "orange")+
-  theme_minimal() +
-  theme(legend.position = "none")
-
-FAL
-FAM <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PerMuscleFA)) +
-  geom_boxplot(color = "black", fill = "orange")+
-  theme_minimal() +
+  labs(y = "% Muscle FA", x = "") +
   theme(legend.position = "none")
 
 FAM
@@ -251,13 +239,67 @@ FAM
 HSI <- ggplot(data = lipid2, aes(x = as.factor(Month), y = HIS)) +
   geom_boxplot(color = "black", fill = "orange")+
   theme_minimal() +
+  ylim(0,3) + 
+  labs(y = "HSI wet", x = "Month") +
   theme(legend.position = "none")
 
 HSI
-Poster_FA2020 <- ggarrange(FAM, FAL, FA1, HSI,
-                       labels = c("A", "B", "C", "D"),
-                       ncol = 1, nrow = 4)
-Poster_FA2020
+
+LivFA <- ggplot(data = lipid2, aes(x = as.factor(Month), y = LiverFA)) +
+  geom_boxplot(color = "black", fill = "orange")+
+  theme_minimal() +
+  labs(y = "Liver FA (mg/g wwt)", x = "") +
+  theme(legend.position = "none")
+
+LivFA
+
+
+
+Poster_FA <- ggarrange(LivFA, FAL, HSI, FA1,
+                     labels = c("A", "B", "C", "D"),
+                     label.x = 0.2,
+                     ncol = 2, nrow = 2)
+Poster_FA
+
+
+
+
+#########prob deltet below stuff
+##here I try only with 2020  
+##DID NOT LIKE. Instead, USE ALL YEARS (above)
+#lipid2 <- filter(lipid, year==2020)
+#distinct(lipid2,year)
+
+#FA1 <- ggplot(data = lipid2, aes(x = as.factor(Month), y = Total_FA_mg)) +
+#  geom_boxplot(color = "black", fill = "orange")+
+#  theme_minimal() +
+#  theme(legend.position = "none")
+
+#FA1
+
+#FAL <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PerLiverFA)) +
+#  geom_boxplot(color = "black", fill = "orange")+
+#  theme_minimal() +
+#  theme(legend.position = "none")
+
+#FAL
+#FAM <- ggplot(data = lipid2, aes(x = as.factor(Month), y = PerMuscleFA)) +
+#  geom_boxplot(color = "black", fill = "orange")+
+#  theme_minimal() +
+#  theme(legend.position = "none")
+
+#FAM
+
+#HSI <- ggplot(data = lipid2, aes(x = as.factor(Month), y = HIS)) +
+#  geom_boxplot(color = "black", fill = "orange")+
+#  theme_minimal() +
+#  theme(legend.position = "none")
+
+#HSI
+#Poster_FA2020 <- ggarrange(FAM, FAL, FA1, HSI,
+#                       labels = c("A", "B", "C", "D"),
+#                       ncol = 2, nrow = 2)
+#Poster_FA2020
 
 
 
